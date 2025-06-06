@@ -16,13 +16,14 @@ from helpers.profiles import (
 
 mcp = FastMCP("aws_finops")
 
-@mcp.tool()
+@mcp.tool(annotations={"readOnlyHint": True})
 async def get_cost(
     profiles: List[str], 
     time_range_days: Optional[int] = None,
     start_date_iso: Optional[str] = None, 
     end_date_iso: Optional[str] = None,   
     tags: Optional[List[str]] = None,
+    group_by: Optional[str] = "SERVICE",
 ) -> Dict[str, Any]:
     """
     Get cost data for a specified AWS profile for a single defined period.
@@ -38,6 +39,7 @@ async def get_cost(
         start_date_iso: Optional. The start date of the period (inclusive) in YYYY-MM-DD format.
         end_date_iso: Optional. The end date of the period (inclusive) in YYYY-MM-DD format.
         tags: Optional. List of cost allocation tags (e.g., ["Team=DevOps", "Env=Prod"]).
+        group_by: Optional. The dimension to group costs by (default is "SERVICE").
     Returns:
         Dict: Processed cost data for the specified period.
     """
@@ -120,7 +122,7 @@ async def get_cost(
                 TimePeriod={"Start": period_start_date.isoformat(), "End": period_api_end_date.isoformat()},
                 Granularity=service_granularity,
                 Metrics=["UnblendedCost"],
-                GroupBy=[{"Type": "DIMENSION", "Key": "SERVICE"}],
+                GroupBy=[{"Type": "DIMENSION", "Key": group_by}],
                 **cost_explorer_kwargs,
             )
             
@@ -135,14 +137,13 @@ async def get_cost(
             sorted_service_costs = dict(sorted(aggregated_service_costs.items(), key=lambda item: item[1], reverse=True))
             processed_service_costs = {k: round(v, 2) for k, v in sorted_service_costs.items() if v > 0.001}
 
-            cost_data[primary_profile] = {
-                "profile_name": primary_profile,
-                "account_id": account_id,
-                "period_start_date": period_start_date.isoformat(),
-                "period_end_date": period_display_end_date.isoformat(),
-                "period_total_cost": round(period_total_cost, 2),
-                "period_cost_by_service": processed_service_costs,
-                "status": "success"
+            cost_data[f"Profile Name: {primary_profile}"] = {
+                "AWS Account #": account_id,
+                "Period Start Date": period_start_date.isoformat(),
+                "Period End Date": period_display_end_date.isoformat(),
+                "Total Cost": round(period_total_cost, 2),
+                f"Cost By {group_by}": processed_service_costs,
+                "Status": "success"
             }
 
         except Exception as e:
@@ -154,7 +155,7 @@ async def get_cost(
     return {"accounts_cost_data": cost_data, "errors_for_profiles": errors_for_profiles}
 
 
-@mcp.tool()
+@mcp.tool(annotations={"readOnlyHint": True})
 async def run_finops_audit(
     profiles: List[str],
     regions: List[str]

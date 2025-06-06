@@ -6,7 +6,8 @@ from boto3.session import Session
 ApiErrors = Dict[str, str]
 
 def profiles_to_use(
-        profiles: List[str]
+        profiles: Optional[List[str]] = None,
+        all_profiles: Optional[bool] = False
     )-> Tuple[Dict[str, List[str]], ApiErrors]:
     """
     Filters a list of AWS profiles, checks if they exist, retrieves their
@@ -14,6 +15,8 @@ def profiles_to_use(
 
     Args:
         profiles: A list of profile names to process.
+        all_profiles: If True, retrieves all available profiles from the current session.
+                      If False, only processes the provided list of profiles.
 
     Returns:
         A dictionary where keys are AWS Account IDs (str) and
@@ -27,7 +30,13 @@ def profiles_to_use(
     session = boto3.Session()
     available_profiles = session.available_profiles
     account_to_profiles_map: Dict[str, List[str]] = defaultdict(list)
-    for profile in profiles:
+
+    if all_profiles:
+        profiles_to_query = available_profiles
+    else:
+        profiles_to_query = profiles
+
+    for profile in profiles_to_query:
         if profile in available_profiles:
             try:
                 session = boto3.Session(profile_name=profile)

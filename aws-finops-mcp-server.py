@@ -18,7 +18,8 @@ mcp = FastMCP("aws_finops")
 
 @mcp.tool(annotations={"readOnlyHint": True})
 async def get_cost(
-    profiles: List[str], 
+    profiles: Optional[List[str]] = None, 
+    all_profiles: bool = False,
     time_range_days: Optional[int] = None,
     start_date_iso: Optional[str] = None, 
     end_date_iso: Optional[str] = None,   
@@ -35,6 +36,7 @@ async def get_cost(
     
     Args:
         profile_name: The AWS CLI profile name to use.
+        all_profiles: If True, use all available profiles; otherwise, use the specified profiles.
         time_range_days: Optional. Number of days for the cost data (e.g., last 7 days).
         start_date_iso: Optional. The start date of the period (inclusive) in YYYY-MM-DD format.
         end_date_iso: Optional. The end date of the period (inclusive) in YYYY-MM-DD format.
@@ -43,9 +45,14 @@ async def get_cost(
     Returns:
         Dict: Processed cost data for the specified period.
     """
-    profiles_to_query, errors_for_profiles = profiles_to_use(profiles)
-    if not profiles_to_query:
-        return {"error": "No valid profiles found."}
+    if all_profiles:
+        profiles_to_query, errors_for_profiles = profiles_to_use(all_profiles=True)
+        if not profiles_to_query:
+            return {"error": "No valid profiles found."}
+    else:
+        profiles_to_query, errors_for_profiles = profiles_to_use(profiles)
+        if not profiles_to_query:
+            return {"error": "No valid profiles found."}
     
     cost_data = {}
     
@@ -157,8 +164,9 @@ async def get_cost(
 
 @mcp.tool(annotations={"readOnlyHint": True})
 async def run_finops_audit(
-    profiles: List[str],
-    regions: List[str]
+    regions: List[str],
+    profiles: Optional[List[str]] = None,
+    all_profiles: bool = False,
     ) -> Dict[Any, Any]:
 
     """
@@ -172,14 +180,23 @@ async def run_finops_audit(
     Args:
         List of AWS CLI profiles as strings.
         List of AWS Regions as strings.
+        all_profiles: If True, use all available profiles; otherwise, use the specified profiles.
 
     Returns:
         Processed Audit data for specified CLI Profile and regions in JSON(dict) format with errors caught from APIs.
     """
 
     audit_report: Dict[str, Any] = defaultdict(list)
-    
-    profiles_to_query, errors_for_profiles = profiles_to_use(profiles)
+
+    if all_profiles:
+        profiles_to_query, errors_for_profiles = profiles_to_use(all_profiles=True)
+        if not profiles_to_query:
+            return {"error": "No valid profiles found."}
+    else:
+        profiles_to_query, errors_for_profiles = profiles_to_use(profiles)
+        if not profiles_to_query:
+            return {"error": "No valid profiles found."}
+
     unique_profiles_to_query: List[str] = []
     if profiles_to_query:
         for accountid, profile in profiles_to_query.items():

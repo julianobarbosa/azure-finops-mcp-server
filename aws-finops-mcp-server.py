@@ -1,10 +1,18 @@
 import boto3
+from boto3.session import Session
 from mcp.server.fastmcp import FastMCP
 from datetime import date, datetime, timedelta
 from typing import Dict, Any, Optional, List
 from collections import defaultdict
 
-from helpers.profiles import profiles_to_use, ProfileErrors
+from helpers.profiles import (
+    profiles_to_use, 
+    ApiErrors,
+    get_stopped_ec2,
+    get_unattached_ebs_volumes,
+    get_unassociated_eips,
+    get_budget_data
+    )
 
 mcp = FastMCP("aws_finops")
 
@@ -146,9 +154,61 @@ async def get_cost(
     return {"accounts_cost_data": cost_data, "errors_for_profiles": errors_for_profiles}
 
 
+@mcp.tool()
+async def run_finops_audit(
+    profiles: List[str],
+    regions: List[str]
+    ) -> Dict[Any, Any]:
+
+    """
+    Get FinOps Audit Report findings for your AWS CLI Profiles.
+    Each Audit Report includes:
+        Stopped EC2 Instances, 
+        Un-attached EBS VOlumes,
+        Un-associated EIPs,
+        Budget Status for your one or more specified AWS profiles. Except the budget status, other resources are region specific. 
+
+    Args:
+        List of AWS CLI profiles as strings.
+        List of AWS Regions as strings.
+
+    Returns:
+        Processed Audit data for specified CLI Profile and regions in JSON(dict) format with errors caught from APIs.
+    """
+
+    audit_report: Dict[str, Any] = defaultdict(list)
+    
+    profiles_to_query, errors_for_profiles = profiles_to_use(profiles)
+    unique_profiles_to_query: List[str] = []
+    if profiles_to_query:
+        for accountid, profile in profiles_to_query.items():
+            unique_profiles_to_query.append(profile[0])
+    
+    for profile in unique_profiles_to_query:
+        session = boto3.Session(profile_name=profile)
+        accountid = session.client('sts').get_caller_identity().get('Account')
+
+        stopped_ec2, stoppedEc2Errors = get_stopped_ec2(session, regions)
+        unattachedEBSVolumes, errorsGettingVolumes = get_unattached_ebs_volumes(session, regions)
+        un_attached_eips, errorsGettingEIPs = get_unassociated_eips(session, regions)
+        budget_status, error_getting_budgets = get_budget_data(session, accountid)
+
+        audit_report[f"Profile Name: {profile}"].append({
+            "AWS Account": accountid, 
+            "Stopped EC2 Instances": stopped_ec2,
+            "Unattached EBS Volumes": unattachedEBSVolumes,
+            "Un-associated EIPs":  un_attached_eips,
+            "Budget Status": budget_status,
+            "Errors getting stopped EC2 instances": stoppedEc2Errors,
+            "Errors getting EBS volumes": errorsGettingVolumes,
+            "Errors getting EIPS": errorsGettingEIPs,
+            "Errors getting Budgets": error_getting_budgets})
+        
+    return {"Audit Report": dict(audit_report),
+        "Error processing profiles": errors_for_profiles}
 
 
-
+    
 
 
 if __name__ == "__main__":

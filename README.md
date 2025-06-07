@@ -1,2 +1,274 @@
-# aws-finops-mcp-server
-## Work In Progress
+# AWS FinOps MCP Server
+
+[![PyPI version](https://badge.fury.io/py/aws-finops-mcp-server.svg)](https://badge.fury.io/py/aws-finops-mcp-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+An MCP (Model Context Protocol) server that brings powerful AWS FinOps capabilities directly into your AI assistant. Analyze cloud costs, audit for waste, and get budget insights using natural language, all while keeping your credentials secure on your local machine.
+
+---
+
+## Table of Contents
+
+1.  [What is an MCP Server?](#what-is-an-mcp-server)
+2.  [Why Use the AWS FinOps MCP Server?](#why-use-the-aws-finops-mcp-server)
+3.  [Key Features](#key-features)
+4.  [Prerequisites](#-prerequisites)
+    *   [General Requirements](#general-requirements)
+    *   [AWS Requirements & IAM Permissions](#aws-requirements--iam-permissions)
+5.  [Installation](#-installation)
+6.  [Configuration](#-configuration)
+    *   [Step 1: AWS CLI Profile Setup](#step-1-aws-cli-profile-setup)
+    *   [Step 2: MCP Client Setup (Claude for Desktop)](#step-2-mcp-client-setup-claude-for-desktop)
+7.  [Usage & Example Prompts](#-usage--example-prompts)
+    *   [Use Case: Cost & Usage Analysis](#use-case-cost--usage-analysis)
+    *   [Use Case: FinOps Waste & Savings Audit](#use-case-finops-waste--savings-audit)
+8.  [Tool Reference](#-tool-reference)
+    *   [`get_cost`](#get_cost)
+    *   [`run_finops_audit`](#run_finops_audit)
+9.  [Cost Considerations](#-cost-considerations)
+10. [Development & Contributing](#-development--contributing)
+11. [License](#-license)
+
+---
+
+### What is an MCP Server?
+
+MCP (Model Context Protocol) is an open protocol that standardizes how AI applications connect with external data sources and tools. Think of it as a universal adapter, like USB-C, but for AI.
+
+An MCP server is a lightweight program that "exposes" capabilities (like accessing files, querying a database, or calling an API) to any compatible AI application (the "client"). This allows you to extend the power of your AI assistant to your own data and workflows securely.
+
+For more information, visit the **[MCP Introduction](https://modelcontextprotocol.io/introduction)**.
+
+### Why Use the AWS FinOps MCP Server?
+
+Managing AWS costs can be complex. Finding answers to questions like "What did we spend on S3 last month?" or "Do we have any unused EC2 instances?" often requires navigating the AWS Console or writing scripts.
+
+This server bridges that gap by connecting the powerful, natural language understanding of an LLM directly to your AWS account's financial data. You can ask complex questions and get immediate, actionable insights without ever leaving your chat interface.
+
+#### Use Case: Quick Cost Breakdown
+
+> **Prompt:** "Get `usage-type` based cost for all my AWS CLI profiles for the last 90 days. And get the `audit report` for all profiles for region `ap-south-1`. Make a finops report with data in minimalistic way and keep it professional. 
+
+![alt text](assets/Claude_Desktop.png)
+
+#### Use Case: Proactive Waste Detection
+
+### Key Features
+
+-   **Detailed Cost Analysis**: Slice and dice your AWS cost data using tags, time ranges, and service groupings via the Cost Explorer API.
+-   **Automated FinOps Audit**: Instantly find common sources of cloud waste, such as stopped EC2 instances, unattached EBS volumes, and unassociated Elastic IPs.
+-   **Budget Monitoring**: Check the status of your AWS Budgets to see if you are on track, over budget, or forecasted to exceed your limits.
+-   **Multi-Profile & Multi-Region**: Seamlessly query across any or all of your configured AWS profiles and regions in a single command.
+-   **Secure by Design**: Your AWS credentials **never leave your machine**. The server runs locally and uses your existing AWS CLI configuration to make API calls directly to AWS.
+
+### Prerequisites
+
+#### General Requirements
+
+-   **Python 3.10+**: Ensure you have a compatible Python version installed.
+-   **MCP Client**: An application that supports MCP. This guide uses [Claude for Desktop](https://claude.ai/download) as the example.
+
+#### AWS Requirements & IAM Permissions
+
+-   **AWS CLI**: The [AWS CLI must be installed](https://aws.amazon.com/cli/) on your machine.
+-   **AWS Account & Profile(s)**: You need at least one configured AWS profile.
+-   **IAM Permissions**: The AWS identity (IAM User or Role) associated with your profile(s) requires specific read-only permissions to function correctly.
+
+Create an IAM policy with the following JSON and attach it to your user or role. These permissions are **read-only** and grant access only to the necessary services.
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowFinOpsMCPServer",
+            "Effect": "Allow",
+            "Action": [
+                "ce:GetCostAndUsage",
+                "budgets:DescribeBudgets",
+                "ec2:DescribeInstances",
+                "ec2:DescribeVolumes",
+                "ec2:DescribeAddresses",
+                "sts:GetCallerIdentity"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+
+### Installation
+
+There are several ways to install the AWS FinOps MCP Server:
+
+### Option 1: Using pipx (Recommended)
+```bash
+pipx install aws-finops-mcp-server
+```
+
+If you don't have `pipx`, install it with:
+
+```bash
+python -m pip install --user pipx
+python -m pipx ensurepath
+```
+
+### Option 3: Using uv (Fast Python Package Installer)
+[uv](https://github.com/astral-sh/uv) is a modern Python package installer and resolver that's extremely fast.
+
+```bash
+# Install uv if you don't have it yet
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Create project directory
+mkdir aws-finops-mcp-server && cd aws-finops-mcp-server
+
+# Create and activate python virtual environment
+uv venv && source .venv/bin/activate
+
+# Install aws-finops-dashboard
+uv pip install aws-finops-mcp-server
+```
+
+### Option 4: From Source
+```bash
+# Clone the repository
+git clone https://github.com/ravikiranvm/aws-finops-mcp-server.git
+cd aws-finops-mcp-server
+
+# Create and activate python virtual environment
+python -m venv .venv && source .venv/bin/activate
+
+# Install using pip
+pip install -e .
+```
+
+### Configuration
+
+#### Step 1: AWS CLI Profile Setup
+
+If you haven't already, configure your AWS profiles. For each profile you want to use, run:
+
+```bash
+aws configure --profile your-profile-name
+```
+
+The CLI will prompt you for:
+-   `AWS Access Key ID`: Your credential's access key.
+-   `AWS Secret Access Key`: Your credential's secret key.
+-   `Default region name`: e.g., `us-east-1`.
+-   `Default output format`: e.g., `json`.
+
+For your default profile, you can omit the `--profile` flag.
+
+#### Step 2: MCP Client Setup (Claude for Desktop)
+
+To use this server with Claude for Desktop, you need to tell the application how to run it.
+
+1.  Open your Claude for Desktop configuration file. It's located at:
+    *   **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+    *   **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+2.  Add the following entry to the `mcpServers` object. If the file doesn't exist or is empty, you'll need to create the JSON structure.
+
+    ```json
+    {
+      "mcpServers": {
+        "aws_finops": {
+          "command": "aws-finops-mcp-server",
+          "args": []
+        }
+      }
+    }
+    ```
+
+3.  Save the file and **completely restart Claude for Desktop**.
+
+After restarting, the server will launch in the background, and its tools will be available to Claude.
+
+### Usage & Example Prompts
+
+You can now ask questions about your AWS finances in plain English.
+
+#### Use Case: Cost & Usage Analysis
+
+> **Basic Query:**
+> "Show me my AWS costs for the `default` profile this month."
+
+> **Time-Range Query:**
+> "get aws cost for my `dev` profile for the last 14 days"
+
+> **Filtered & Grouped Query:**
+> "What was the cost for my `production` profile last month, filtered by the tag `CostCenter=Project-Alpha`, and grouped by `INSTANCE_TYPE`?"
+
+> **Multi-Profile Query:**
+> "Compare the costs for my `staging` and `production` profiles over the last 30 days."
+
+#### Use Case: FinOps Waste & Savings Audit
+
+> **Simple Audit:**
+> "Run a finops audit on my `default` profile in `us-east-1`."
+
+> **Multi-Region, Multi-Profile Audit:**
+> "Check for unused resources in `us-west-2` and `eu-west-1` for my `prod-us` and `prod-eu` profiles."
+
+> **Comprehensive Audit for All Profiles:**
+> "Run a FinOps audit for all my configured profiles in `us-east-1`."
+
+### Tool Reference
+
+#### `get_cost`
+Fetches cost and usage data from AWS Cost Explorer.
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `profiles` | `List[str]` | A list of AWS CLI profile names to use. |
+| `all_profiles` | `bool` | If `True`, use all available profiles. Defaults to `False`. |
+| `time_range_days`| `int` | Number of past days to fetch data for (e.g., `7` for last 7 days). |
+| `start_date_iso` | `str` | Start date in `YYYY-MM-DD` format. Takes precedence over `time_range_days`. |
+| `end_date_iso` | `str` | End date in `YYYY-MM-DD` format. Must be used with `start_date_iso`. |
+| `tags` | `List[str]` | Filter by cost allocation tags. Format: `["Key=Value", "Key2=Value2"]`. |
+| `dimensions` | `List[str]` | Filter by dimensions. Format: `["REGION=us-east-1"]`. |
+| `group_by` | `str` | The dimension to group costs by. Default is `SERVICE`. |
+
+#### `run_finops_audit`
+Runs a financial audit to find unused and potentially costly resources.
+
+| Parameter | Type | Description |
+| :--- | :--- | :--- |
+| `regions` | `List[str]` | A list of AWS regions to run the audit in (e.g., `["us-east-1", "eu-west-1"]`). |
+| `profiles` | `List[str]` | A list of AWS CLI profile names to use. |
+| `all_profiles`| `bool` | If `True`, use all available profiles. Defaults to `False`. |
+
+### Cost Considerations
+
+This tool interacts with the AWS Cost Explorer API. AWS charges for these API calls.
+-   **Cost:** Each call to `get_cost` is a request to the Cost Explorer API and typically costs **$0.01**.
+-   The `run_finops_audit` tool calls other AWS service APIs (EC2, Budgets) which are generally included in the free tier or have negligible costs at typical usage levels.
+
+Be mindful of making frequent `get_cost` calls, especially in any automated workflows, to avoid unexpected charges.
+
+### Development & Contributing
+
+Contributions are welcome! If you'd like to improve the server or add new features, please follow these steps:
+
+1.  **Fork and Clone:** Fork the repository and clone it to your local machine.
+2.  **Set Up Environment:**
+    ```bash
+    git clone https://github.com/your-username/aws-finops-mcp-server.git
+    cd aws-finops-mcp-server
+    python -m venv .venv
+    source .venv/bin/activate  # On Windows, use `.venv\Scripts\activate`
+    ```
+3.  **Install in Editable Mode:**
+    ```bash
+    pip install -e .
+    ```
+4.  **Make Changes:** Add your features or bug fixes.
+5.  **Submit a Pull Request:** Open a PR against the `main` branch with a clear description of your changes.
+
+### License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for full details.
+
+Made with ❤️ by **Ravi Kiran**

@@ -222,3 +222,49 @@ def get_budget_data(
         error_getting_budgets["Budget Error"] = str(e)
 
     return budget_data, error_getting_budgets
+
+
+def cost_filters(
+    tags: Optional[List[str]] = None,
+    dimensions: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    
+    tag_filters_list: List[Dict[str, Any]] = []
+    dimension_filters_list: List[Dict[str, Any]] = []
+    filter_param: Optional[Dict[str, Any]] = None
+    cost_explorer_kwargs: Dict[str, Any] = {}
+
+    if tags:
+        for t_str in tags:
+            if "=" in t_str:
+                key, value = t_str.split("=", 1)
+                tag_filters_list.append({"Key": key, "Values": [value]})
+
+    if dimensions:
+        for d_str in dimensions:
+            if "=" in d_str:
+                key, value = d_str.split("=", 1)
+                dimension_filters_list.append({"Key": key, "Values": [value]})
+
+    filters = []
+    if tag_filters_list:
+        if len(tag_filters_list) == 1:
+            filters.append({"Tags": tag_filters_list[0]})
+        else:
+            filters.append({"And": [{"Tags": f} for f in tag_filters_list]})
+
+    if dimension_filters_list:
+        if len(dimension_filters_list) == 1:
+            filters.append({"Dimensions": dimension_filters_list[0]})
+        else:
+            filters.append({"And": [{"Dimensions": f} for f in dimension_filters_list]})
+
+    if len(filters) == 1:
+        filter_param = filters[0]
+    elif len(filters) > 1:
+        filter_param = {"And": filters}
+
+    if filter_param:
+        cost_explorer_kwargs["Filter"] = filter_param
+
+    return cost_explorer_kwargs

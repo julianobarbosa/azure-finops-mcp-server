@@ -11,7 +11,8 @@ from helpers.profiles import (
     get_stopped_ec2,
     get_unattached_ebs_volumes,
     get_unassociated_eips,
-    get_budget_data
+    get_budget_data,
+    cost_filters,
     )
 
 mcp = FastMCP("aws_finops")
@@ -24,6 +25,7 @@ async def get_cost(
     start_date_iso: Optional[str] = None, 
     end_date_iso: Optional[str] = None,   
     tags: Optional[List[str]] = None,
+    dimensions: Optional[List[str]] = None,
     group_by: Optional[str] = "SERVICE",
 ) -> Dict[str, Any]:
     """
@@ -33,6 +35,9 @@ async def get_cost(
     If 'start_date_iso' and 'end_date_iso' are provided, they take precedence.
     If no period is defined, defaults to the current month to date.
     Tags can be provided as a list of "Key=Value" strings to filter costs.
+    Dimensions can be provided as a list of "Key=Value" strings to filter costs by specific dimensions.
+    If no tags or dimensions are provided, all costs will be returned.
+    Grouping can be done by a specific dimension, default is "SERVICE".
     
     Args:
         profile_name: The AWS CLI profile name to use.
@@ -41,6 +46,7 @@ async def get_cost(
         start_date_iso: Optional. The start date of the period (inclusive) in YYYY-MM-DD format.
         end_date_iso: Optional. The end date of the period (inclusive) in YYYY-MM-DD format.
         tags: Optional. List of cost allocation tags (e.g., ["Team=DevOps", "Env=Prod"]).
+        dimensions: Optional. List of dimensions to filter costs by (e.g., ["REGION=us-east-1", "AZ=us-east-1a"]).
         group_by: Optional. The dimension to group costs by (default is "SERVICE").
     Returns:
         Dict: Processed cost data for the specified period.
@@ -64,21 +70,7 @@ async def get_cost(
             account_id = session.client("sts").get_caller_identity().get("Account")
             ce = session.client("ce")
 
-            tag_filters_list: List[Dict[str, Any]] = []
-            if tags:
-                for t_str in tags:
-                    if "=" in t_str:
-                        key, value = t_str.split("=", 1)
-                        tag_filters_list.append({"Key": key, "Values": [value]})
-            filter_param: Optional[Dict[str, Any]] = None
-            if tag_filters_list:
-                if len(tag_filters_list) == 1:
-                    filter_param = {"Tags": tag_filters_list[0]}
-                else:
-                    filter_param = {"And": [{"Tags": f} for f in tag_filters_list]}
-            cost_explorer_kwargs: Dict[str, Any] = {}
-            if filter_param:
-                cost_explorer_kwargs["Filter"] = filter_param
+            cost_explorer_kwargs = cost_filters(tags, dimensions)
 
             today = date.today()
             period_start_date: date
@@ -225,9 +217,12 @@ async def run_finops_audit(
     return {"Audit Report": dict(audit_report),
         "Error processing profiles": errors_for_profiles}
 
-
-    
-
+  
+def run_server():
+    """
+    Entry point to the FastMCP server.
+    """
+    mcp.run(transport='stdio')
 
 if __name__ == "__main__":
-    mcp.run(transport='stdio')
+    run_server()

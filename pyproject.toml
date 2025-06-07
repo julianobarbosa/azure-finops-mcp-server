@@ -1,10 +1,22 @@
 [project]
 name = "aws-finops-mcp-server"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.0.1"
+description = "An MCP server for AWS FinOps to analyze costs and audit for savings."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Ravi Kiran Vallamkonda"}]
+
 dependencies = [
-    "boto3>=1.38.29",
-    "mcp[cli]>=1.9.2",
+    "boto3",
+    "mcp[cli]",
 ]
+
+keywords = ["aws", "cost", "finops", "cloud"]
+
+[project.urls]
+"Homepage" = "https://github.com/ravikiranvm/aws-finops-mcp-server"
+"Source" = "https://github.com/ravikiranvm/aws-finops-mcp-server"
+
+[project.scripts]
+aws-finops-mcp-server = "aws_finops_mcp_server.main:run_server"

@@ -1,6 +1,6 @@
 # AWS FinOps MCP Server
 
-[![PyPI version](https://badge.fury.io/py/aws-finops-mcp-server.svg)](https://badge.fury.io/py/aws-finops-mcp-server)
+[![PyPI version](https://img.shields.io/pypi/v/aws-finops-mcp-server.svg)](https://pypi.org/project/aws-finops-mcp-server/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 An MCP (Model Context Protocol) server that brings powerful AWS FinOps capabilities directly into your AI assistant. Analyze cloud costs, audit for waste, and get budget insights using natural language, all while keeping your credentials secure on your local machine.

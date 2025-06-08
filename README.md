@@ -5,6 +5,28 @@
 
 An MCP (Model Context Protocol) server that brings powerful AWS FinOps capabilities directly into your AI assistant. Analyze cloud costs, audit for waste, and get budget insights using natural language, all while keeping your credentials secure on your local machine.
 
+### What is an MCP Server?
+
+An MCP server is a lightweight program that "exposes" capabilities (like accessing files, querying a database, or calling an API) to any compatible AI application (the "client"). This allows you to extend the power of your AI assistant to your own data and workflows securely.
+
+For more information, visit the **[MCP Introduction](https://modelcontextprotocol.io/introduction)**.
+
+### Why Use the AWS FinOps MCP Server?
+
+Managing AWS costs can be complex. Finding answers to questions like "What did we spend on S3 last month?" or "Do we have any unused EC2 instances?" often requires navigating the AWS Console or writing scripts.
+
+This server bridges that gap by connecting the powerful, natural language understanding of an LLM directly to your AWS account's financial data. You can ask complex questions and get immediate, actionable insights without ever leaving your chat interface.
+
+#### Use Cases: Quick Cost Breakdown
+
+> **Prompt on Claude Desktop:** "Get `usage-type` based cost for all my AWS CLI profiles for the last 90 days. And get the `audit report` for all profiles for region `ap-south-1`. Make a finops report with data in minimalistic way and keep it professional."
+
+![alt text](assets/Claude_Desktop.png)
+
+> **Prompt on Amazon Q CLI:** "Could you use `aws-finops` mcp server and get cost data for each month in the last 6 months for `profile 04` and present the data in a tabular format highlighting how the total cost and cost for each service has changed every month?"
+
+![alt text](<assets/Amazon Q CLI.png>)
+
 ---
 
 ## Table of Contents
@@ -31,34 +53,12 @@ An MCP (Model Context Protocol) server that brings powerful AWS FinOps capabilit
 
 ---
 
-### What is an MCP Server?
-
-MCP (Model Context Protocol) is an open protocol that standardizes how AI applications connect with external data sources and tools. Think of it as a universal adapter, like USB-C, but for AI.
-
-An MCP server is a lightweight program that "exposes" capabilities (like accessing files, querying a database, or calling an API) to any compatible AI application (the "client"). This allows you to extend the power of your AI assistant to your own data and workflows securely.
-
-For more information, visit the **[MCP Introduction](https://modelcontextprotocol.io/introduction)**.
-
-### Why Use the AWS FinOps MCP Server?
-
-Managing AWS costs can be complex. Finding answers to questions like "What did we spend on S3 last month?" or "Do we have any unused EC2 instances?" often requires navigating the AWS Console or writing scripts.
-
-This server bridges that gap by connecting the powerful, natural language understanding of an LLM directly to your AWS account's financial data. You can ask complex questions and get immediate, actionable insights without ever leaving your chat interface.
-
-#### Use Case: Quick Cost Breakdown
-
-> **Prompt:** "Get `usage-type` based cost for all my AWS CLI profiles for the last 90 days. And get the `audit report` for all profiles for region `ap-south-1`. Make a finops report with data in minimalistic way and keep it professional. 
-
-![alt text](assets/Claude_Desktop.png)
-
-#### Use Case: Proactive Waste Detection
-
 ### Key Features
 
--   **Detailed Cost Analysis**: Slice and dice your AWS cost data using tags, time ranges, and service groupings via the Cost Explorer API.
--   **Automated FinOps Audit**: Instantly find common sources of cloud waste, such as stopped EC2 instances, unattached EBS volumes, and unassociated Elastic IPs.
+-   **Detailed Cost Analysis**: Query your AWS cost data using tags, time ranges, and service groupings.
+-   **Automated FinOps Audit**: Instantly find common sources of cloud waste, such as stopped EC2 instances, unattached EBS volumes, and unassociated Elastic IPs etc.
 -   **Budget Monitoring**: Check the status of your AWS Budgets to see if you are on track, over budget, or forecasted to exceed your limits.
--   **Multi-Profile & Multi-Region**: Seamlessly query across any or all of your configured AWS profiles and regions in a single command.
+-   **Multi-Profile & Multi-Region**: Seamlessly query across any or all of your configured AWS accounts and regions in a single command.
 -   **Secure by Design**: Your AWS credentials **never leave your machine**. The server runs locally and uses your existing AWS CLI configuration to make API calls directly to AWS.
 
 ### Prerequisites
@@ -113,7 +113,7 @@ python -m pip install --user pipx
 python -m pipx ensurepath
 ```
 
-### Option 3: Using uv (Fast Python Package Installer)
+### Option 2: Using uv (Fast Python Package Installer)
 [uv](https://github.com/astral-sh/uv) is a modern Python package installer and resolver that's extremely fast.
 
 ```bash
@@ -130,7 +130,7 @@ uv venv && source .venv/bin/activate
 uv pip install aws-finops-mcp-server
 ```
 
-### Option 4: From Source
+### Option 3: From Source
 ```bash
 # Clone the repository
 git clone https://github.com/ravikiranvm/aws-finops-mcp-server.git
@@ -185,6 +185,31 @@ To use this server with Claude for Desktop, you need to tell the application how
 3.  Save the file and **completely restart Claude for Desktop**.
 
 After restarting, the server will launch in the background, and its tools will be available to Claude.
+
+> ⚠️ **Note:**  
+> After installing this tool (e.g., via `pipx install aws-finops-mcp-server`), ensure the `aws-finops-mcp-server` command is available in your system's `PATH`.  
+> 
+> To check where it's installed, run:
+> 
+> ```bash
+> which aws-finops-mcp-server
+> ```
+>
+> If it returns a path like `/Users/yourname/.local/bin/aws-finops-mcp-server`, but it's **not in your PATH**, you have two options:
+>
+> - Run `pipx ensurepath` and restart your terminal, **or**
+> - Use the full path in your `mcpServers` config:
+>
+> ```json
+> {
+>   "mcpServers": {
+>     "aws_finops": {
+>       "command": "/full/path/to/aws-finops-mcp-server",
+>       "args": []
+>     }
+>   }
+> }
+> ```
 
 ### Usage & Example Prompts
 
@@ -243,10 +268,8 @@ Runs a financial audit to find unused and potentially costly resources.
 ### Cost Considerations
 
 This tool interacts with the AWS Cost Explorer API. AWS charges for these API calls.
--   **Cost:** Each call to `get_cost` is a request to the Cost Explorer API and typically costs **$0.01**.
+-   **Cost:** Every time you use `get_cost` tool, it makes 2 calls to the Cost Explorer API and it costs **$0.01**.
 -   The `run_finops_audit` tool calls other AWS service APIs (EC2, Budgets) which are generally included in the free tier or have negligible costs at typical usage levels.
-
-Be mindful of making frequent `get_cost` calls, especially in any automated workflows, to avoid unexpected charges.
 
 ### Development & Contributing
 
@@ -270,5 +293,7 @@ Contributions are welcome! If you'd like to improve the server or add new featur
 ### License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for full details.
+
+---
 
 Made with ❤️ by **Ravi Kiran**

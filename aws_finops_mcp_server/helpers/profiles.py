@@ -229,6 +229,10 @@ def cost_filters(
     dimensions: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     
+    """
+    Constructs filter parameters for AWS Cost Explorer API call based on provided tags and dimensions.
+    """
+    
     tag_filters_list: List[Dict[str, Any]] = []
     dimension_filters_list: List[Dict[str, Any]] = []
     filter_param: Optional[Dict[str, Any]] = None

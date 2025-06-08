@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from typing import Dict, Any, Optional, List
 from collections import defaultdict
 
-from helpers.profiles import (
+from aws_finops_mcp_server.helpers.util import (
     profiles_to_use, 
     ApiErrors,
     get_stopped_ec2,

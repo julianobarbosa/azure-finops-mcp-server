@@ -1,6 +1,6 @@
 [project]
 name = "aws-finops-mcp-server"
-version = "0.0.1"
+version = "0.1.0"
 description = "An MCP server for AWS FinOps to analyze costs and audit for savings."
 readme = "README.md"
 requires-python = ">=3.10"

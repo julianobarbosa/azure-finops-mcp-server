@@ -27,6 +27,10 @@ This server bridges that gap by connecting the powerful, natural language unders
 
 ![alt text](<assets/Amazon Q CLI.png>)
 
+> **Prompt on Claude Desktop:** "Generate a comprehensive finops report for management using all the tools available in the AWS FinOps MCP server. Use all the available CLI profiles and use the region ap-south-1 wherever required."
+
+![alt text](<assets/Claude - FinOps Report.png>)
+
 ---
 
 ## Table of Contents

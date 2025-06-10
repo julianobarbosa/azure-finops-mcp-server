@@ -90,7 +90,7 @@ Create an IAM policy with the following JSON and attach it to your user or role.
             "Effect": "Allow",
             "Action": [
                 "ce:GetCostAndUsage",
-                "budgets:DescribeBudgets",
+                "budgets:ViewBudget",
                 "ec2:DescribeInstances",
                 "ec2:DescribeVolumes",
                 "ec2:DescribeAddresses",

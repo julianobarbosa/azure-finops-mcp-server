@@ -171,7 +171,7 @@ For your default profile, you can omit the `--profile` flag.
 To use this server with Claude for Desktop, you need to tell the application how to run it.
 
 1.  Open your Claude for Desktop configuration file. It's located at:
-    *   **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+    *   **macOS / Linux**: `~/Library/Application Support/Claude/claude_desktop_config.json`
     *   **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 2.  Add the following entry to the `mcpServers` object. If the file doesn't exist or is empty, you'll need to create the JSON structure.

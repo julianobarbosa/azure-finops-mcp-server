@@ -1,22 +1,27 @@
 [project]
-name = "aws-finops-mcp-server"
+name = "azure-finops-mcp-server"
 version = "0.1.1"
-description = "An MCP server for AWS FinOps to analyze costs and audit for savings."
+description = "An MCP server for Azure FinOps to analyze costs and audit for savings."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{name = "Ravi Kiran Vallamkonda"}]
 
 dependencies = [
-    "boto3",
+    "azure-identity",
+    "azure-mgmt-costmanagement",
+    "azure-mgmt-compute",
+    "azure-mgmt-network",
+    "azure-mgmt-consumption",
+    "azure-mgmt-resource",
     "mcp[cli]",
 ]
 
-keywords = ["aws", "cost", "finops", "cloud"]
+keywords = ["azure", "cost", "finops", "cloud"]
 
 [project.urls]
-"Homepage" = "https://github.com/ravikiranvm/aws-finops-mcp-server"
-"Source" = "https://github.com/ravikiranvm/aws-finops-mcp-server"
+"Homepage" = "https://github.com/julianobarbosa/azure-finops-mcp-server"
+"Source" = "https://github.com/julianobarbosa/azure-finops-mcp-server"
 
 [project.scripts]
-aws-finops-mcp-server = "aws_finops_mcp_server.main:run_server"
+azure-finops-mcp-server = "azure_finops_mcp_server.main:run_server"

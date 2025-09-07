@@ -1,2 +1,6 @@
-boto3
-"mcp[cli]"
+azure-identity
+azure-mgmt-costmanagement
+azure-mgmt-compute
+azure-mgmt-network
+azure-mgmt-consumption
+azure-mgmt-resource

@@ -144,18 +144,27 @@ def get_stopped_vms(
 def get_unattached_disks(
         credential,
         subscription_id: str,
-        regions: Optional[List[str]] = None
+        regions: Optional[List[str]] = None,
+        include_pvc: bool = False,
+        include_aks_managed: bool = False
     ) -> Tuple[Dict[Any, Any], ApiErrors]:
     """
-    Get list of unattached managed disks for specified regions.
-    Azure equivalent of unattached EBS volumes.
+    Get list of truly unattached managed disks for specified regions.
+    Filters out Kubernetes PVC disks and AKS-managed disks by default.
     
     Args:
         credential: Azure credential object
         subscription_id: Azure subscription ID
         regions: Optional list of Azure region names
+        include_pvc: Whether to include PVC disks (default: False)
+        include_aks_managed: Whether to include disks in MC_* resource groups (default: False)
+    
+    Returns:
+        Dict with categorized unattached disks and any errors
     """
     unattached_disks = defaultdict(list)
+    pvc_disks = defaultdict(list)
+    aks_managed_disks = defaultdict(list)
     disk_errors: ApiErrors = {}
     
     try:
@@ -172,16 +181,149 @@ def get_unattached_disks(
             
             # Check if disk is unattached
             if disk.disk_state == 'Unattached':
-                unattached_disks[disk_location].append({
+                resource_group = disk.id.split('/')[4]
+                disk_info = {
                     "DiskName": disk.name,
                     "DiskSize": f"{disk.disk_size_gb} GB",
                     "DiskType": disk.sku.name,
-                    "ResourceGroup": disk.id.split('/')[4]
-                })
+                    "ResourceGroup": resource_group
+                }
+                
+                # Categorize the disk
+                if disk.name.startswith('pvc-'):
+                    # This is a Kubernetes PVC disk
+                    pvc_disks[disk_location].append(disk_info)
+                    if include_pvc:
+                        disk_info["Note"] = "Kubernetes PVC - Manage via kubectl"
+                        unattached_disks[disk_location].append(disk_info)
+                elif resource_group.startswith('MC_'):
+                    # This is in an AKS-managed resource group
+                    aks_managed_disks[disk_location].append(disk_info)
+                    if include_aks_managed:
+                        disk_info["Note"] = "AKS-managed resource group"
+                        unattached_disks[disk_location].append(disk_info)
+                else:
+                    # This is truly orphaned
+                    unattached_disks[disk_location].append(disk_info)
     except Exception as e:
         disk_errors["Error"] = str(e)
     
-    return dict(unattached_disks), disk_errors
+    # Add metadata about filtered disks if any were found
+    result = dict(unattached_disks)
+    if pvc_disks and not include_pvc:
+        disk_errors["Info"] = f"Filtered out {sum(len(v) for v in pvc_disks.values())} PVC disks"
+    if aks_managed_disks and not include_aks_managed:
+        existing_info = disk_errors.get("Info", "")
+        filtered_aks = sum(len(v) for v in aks_managed_disks.values())
+        disk_errors["Info"] = f"{existing_info}; Filtered out {filtered_aks} AKS-managed disks" if existing_info else f"Filtered out {filtered_aks} AKS-managed disks"
+    
+    return result, disk_errors
+
+def get_detailed_disk_audit(
+        credential,
+        subscription_id: str,
+        regions: Optional[List[str]] = None
+    ) -> Tuple[Dict[str, Any], ApiErrors]:
+    """
+    Get detailed audit of all disk types including orphaned, PVC, and AKS-managed.
+    Provides categorized reporting for better cost optimization decisions.
+    
+    Args:
+        credential: Azure credential object
+        subscription_id: Azure subscription ID
+        regions: Optional list of Azure region names
+    
+    Returns:
+        Dict with detailed disk categorization and any errors
+    """
+    audit_result = {
+        "truly_orphaned": defaultdict(list),
+        "kubernetes_pvc": defaultdict(list),
+        "aks_managed_other": defaultdict(list),
+        "summary": {
+            "total_unattached": 0,
+            "truly_orphaned_count": 0,
+            "pvc_count": 0,
+            "aks_managed_count": 0,
+            "potential_monthly_savings": 0.0
+        }
+    }
+    disk_errors: ApiErrors = {}
+    
+    # Approximate monthly costs per disk type (USD)
+    disk_costs = {
+        "Standard_LRS": 0.05,  # per GB
+        "StandardSSD_LRS": 0.08,  # per GB
+        "Premium_LRS": 0.15,  # per GB
+        "UltraSSD_LRS": 0.30  # per GB
+    }
+    
+    try:
+        compute_client = ComputeManagementClient(credential, subscription_id)
+        
+        for disk in compute_client.disks.list():
+            disk_location = disk.location
+            
+            if regions and disk_location not in regions:
+                continue
+            
+            if disk.disk_state == 'Unattached':
+                resource_group = disk.id.split('/')[4]
+                disk_size_gb = disk.disk_size_gb or 0
+                disk_type = disk.sku.name if disk.sku else "Unknown"
+                
+                # Calculate approximate monthly cost
+                cost_per_gb = disk_costs.get(disk_type, 0.10)  # Default to mid-range
+                monthly_cost = disk_size_gb * cost_per_gb
+                
+                disk_info = {
+                    "DiskName": disk.name,
+                    "DiskSize": f"{disk_size_gb} GB",
+                    "DiskType": disk_type,
+                    "ResourceGroup": resource_group,
+                    "EstimatedMonthlyCost": f"${monthly_cost:.2f}",
+                    "CreatedTime": disk.time_created.isoformat() if disk.time_created else "Unknown"
+                }
+                
+                audit_result["summary"]["total_unattached"] += 1
+                
+                # Categorize the disk
+                if disk.name.startswith('pvc-'):
+                    disk_info["ManagementNote"] = "Kubernetes PVC - Check with: kubectl get pv | grep Released"
+                    audit_result["kubernetes_pvc"][disk_location].append(disk_info)
+                    audit_result["summary"]["pvc_count"] += 1
+                elif resource_group.startswith('MC_'):
+                    disk_info["ManagementNote"] = "AKS-managed - Review AKS cluster health"
+                    audit_result["aks_managed_other"][disk_location].append(disk_info)
+                    audit_result["summary"]["aks_managed_count"] += 1
+                else:
+                    disk_info["ManagementNote"] = "Truly orphaned - Safe to delete"
+                    audit_result["truly_orphaned"][disk_location].append(disk_info)
+                    audit_result["summary"]["truly_orphaned_count"] += 1
+                    audit_result["summary"]["potential_monthly_savings"] += monthly_cost
+                    
+    except Exception as e:
+        disk_errors["Error"] = str(e)
+    
+    # Convert defaultdicts to regular dicts for clean JSON serialization
+    audit_result["truly_orphaned"] = dict(audit_result["truly_orphaned"])
+    audit_result["kubernetes_pvc"] = dict(audit_result["kubernetes_pvc"])
+    audit_result["aks_managed_other"] = dict(audit_result["aks_managed_other"])
+    
+    # Add recommendations
+    if audit_result["summary"]["truly_orphaned_count"] > 0:
+        audit_result["recommendations"] = [
+            f"Delete {audit_result['summary']['truly_orphaned_count']} truly orphaned disks to save ~${audit_result['summary']['potential_monthly_savings']:.2f}/month",
+            "Review the 'truly_orphaned' section for disks safe to delete"
+        ]
+    if audit_result["summary"]["pvc_count"] > 0:
+        if "recommendations" not in audit_result:
+            audit_result["recommendations"] = []
+        audit_result["recommendations"].append(
+            f"Review {audit_result['summary']['pvc_count']} Kubernetes PVCs using: kubectl get pv --all-namespaces | grep Released"
+        )
+    
+    return audit_result, disk_errors
 
 def get_unassociated_public_ips(
         credential,

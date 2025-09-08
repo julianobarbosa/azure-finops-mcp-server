@@ -78,7 +78,7 @@ async def get_cost(
         primary_name = subscription_names[0]
         
         try:
-            cost_mgmt_client = CostManagementClient(credential, subscription_id)
+            cost_mgmt_client = CostManagementClient(credential, base_url="https://management.azure.com")
             
             # Prepare time period
             today = date.today()

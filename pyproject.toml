@@ -25,3 +25,6 @@ keywords = ["azure", "cost", "finops", "cloud"]
 
 [project.scripts]
 azure-finops-mcp-server = "azure_finops_mcp_server.main:run_server"
+
+[tool.setuptools]
+packages = ["azure_finops_mcp_server", "azure_finops_mcp_server.helpers"]

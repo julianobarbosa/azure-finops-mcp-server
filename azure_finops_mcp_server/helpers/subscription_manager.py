@@ -1,8 +1,15 @@
-"""Azure subscription management utilities."""
+"""Azure subscription management utilities.
+
+Security Note: This module uses subprocess to execute Azure CLI commands.
+All subprocess calls are made with hardcoded, trusted commands only.
+No user input is directly passed to subprocess.run() - only Azure CLI
+commands with fixed arguments are executed. The use of check=True and
+explicit command lists (not shell=True) provides additional safety.
+"""
 
 from typing import List, Optional, Dict, Tuple
 from collections import defaultdict
-import subprocess
+import subprocess  # Used only for trusted Azure CLI commands
 import json
 import logging
 
@@ -21,6 +28,7 @@ def get_azure_subscriptions() -> List[Dict[str, str]]:
         List of subscription dictionaries with id, name, and other metadata
     """
     try:
+        # Security: Hardcoded Azure CLI command - no user input injected
         result = subprocess.run(
             ["az", "account", "list", "--output", "json"],
             capture_output=True,
@@ -81,6 +89,7 @@ def profiles_to_use(
     else:
         # Default to current subscription
         try:
+            # Security: Hardcoded Azure CLI command - no user input injected
             result = subprocess.run(
                 ["az", "account", "show", "--output", "json"],
                 capture_output=True,

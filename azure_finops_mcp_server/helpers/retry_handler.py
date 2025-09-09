@@ -105,7 +105,8 @@ class RetryHandler:
         )
         
         if self.config.jitter:
-            # Add random jitter (±25%)
+            # Add random jitter (±25%) to prevent thundering herd
+            # Note: Using standard random for retry jitter is appropriate (non-cryptographic use)
             jitter_range = backoff * 0.25
             backoff += random.uniform(-jitter_range, jitter_range)
         

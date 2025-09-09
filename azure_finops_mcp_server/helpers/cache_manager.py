@@ -48,9 +48,9 @@ class CacheManager:
         sorted_params = sorted(kwargs.items())
         key_data = f"{prefix}:{json.dumps(sorted_params)}"
         
-        # Use hash for long keys - MD5 is safe for cache keys (not for security)
+        # Use SHA-256 hash for long keys to ensure consistent key generation
         if len(key_data) > 100:
-            key_hash = hashlib.md5(key_data.encode(), usedforsecurity=False).hexdigest()
+            key_hash = hashlib.sha256(key_data.encode()).hexdigest()
             return f"{prefix}:{key_hash}"
         
         return key_data

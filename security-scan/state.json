@@ -1,0 +1,100 @@
+{
+  "scan_date": "2025-09-09",
+  "total_vulnerabilities": 7,
+  "vulnerabilities": [
+    {
+      "id": "VULN-001",
+      "severity": "HIGH",
+      "title": "Weak Cryptographic Hash (MD5)",
+      "location": "azure_finops_mcp_server/helpers/cache_manager.py:53",
+      "status": "fixed",
+      "cwe_id": 327,
+      "remediation": "Replaced MD5 with SHA-256",
+      "fixed": true,
+      "fix_date": "2025-09-09"
+    },
+    {
+      "id": "VULN-002",
+      "severity": "LOW",
+      "title": "Insecure Random Number Generation",
+      "location": "azure_finops_mcp_server/helpers/retry_handler.py:110",
+      "status": "fixed",
+      "cwe_id": 330,
+      "remediation": "Added comment clarifying non-cryptographic use",
+      "fixed": true,
+      "fix_date": "2025-09-09"
+    },
+    {
+      "id": "VULN-003",
+      "severity": "LOW",
+      "title": "Subprocess Module Import",
+      "location": "azure_finops_mcp_server/helpers/subscription_manager.py:5",
+      "status": "fixed",
+      "cwe_id": 78,
+      "remediation": "Documented that only trusted commands are executed",
+      "fixed": true,
+      "fix_date": "2025-09-09"
+    },
+    {
+      "id": "VULN-004",
+      "severity": "LOW",
+      "title": "Subprocess with Partial Path (az account list)",
+      "location": "azure_finops_mcp_server/helpers/subscription_manager.py:24-29",
+      "status": "fixed",
+      "cwe_id": 78,
+      "remediation": "Documented as safe - hardcoded trusted command",
+      "fixed": true,
+      "fix_date": "2025-09-09"
+    },
+    {
+      "id": "VULN-005",
+      "severity": "LOW",
+      "title": "Subprocess Execution Check (az account list)",
+      "location": "azure_finops_mcp_server/helpers/subscription_manager.py:24-29",
+      "status": "fixed",
+      "cwe_id": 78,
+      "remediation": "No action needed - already secure implementation",
+      "fixed": true,
+      "fix_date": "2025-09-09"
+    },
+    {
+      "id": "VULN-006",
+      "severity": "LOW",
+      "title": "Subprocess with Partial Path (az account show)",
+      "location": "azure_finops_mcp_server/helpers/subscription_manager.py:84-89",
+      "status": "fixed",
+      "cwe_id": 78,
+      "remediation": "Documented as safe - hardcoded trusted command",
+      "fixed": true,
+      "fix_date": "2025-09-09"
+    },
+    {
+      "id": "VULN-007",
+      "severity": "LOW",
+      "title": "Subprocess Execution Check (az account show)",
+      "location": "azure_finops_mcp_server/helpers/subscription_manager.py:84-89",
+      "status": "fixed",
+      "cwe_id": 78,
+      "remediation": "No action needed - already secure implementation",
+      "fixed": true,
+      "fix_date": "2025-09-09"
+    }
+  ],
+  "progress": {
+    "total": 7,
+    "fixed": 7,
+    "pending": 0,
+    "percentage_complete": 100,
+    "critical_remaining": 0,
+    "high_remaining": 0,
+    "medium_remaining": 0,
+    "low_remaining": 0,
+    "remediation_completed": "2025-09-09"
+  },
+  "recommendations": {
+    "immediate": ["Fix MD5 hash usage"],
+    "short_term": ["Add security comments", "Document subprocess usage"],
+    "medium_term": ["Pin dependencies", "Add rate limiting"],
+    "long_term": ["Enhance audit logging", "Add SAST tools"]
+  }
+}

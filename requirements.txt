@@ -1,7 +1,14 @@
-azure-identity
-azure-mgmt-costmanagement
-azure-mgmt-compute
-azure-mgmt-network
-azure-mgmt-consumption
-azure-mgmt-resource
-mcp
+# Azure SDK dependencies
+azure-identity>=1.15.0
+azure-mgmt-costmanagement>=4.0.1
+azure-mgmt-compute>=30.3.0
+azure-mgmt-network>=25.1.0
+azure-mgmt-consumption>=10.0.0
+azure-mgmt-resource>=23.0.1
+
+# MCP framework
+mcp>=0.9.0
+
+# Core dependencies
+pydantic>=2.0.0
+python-dotenv>=1.0.0

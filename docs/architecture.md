@@ -13,14 +13,14 @@ graph TB
         B[Amazon Q CLI]
         C[Other MCP Clients]
     end
-    
+
     subgraph "MCP Protocol Layer"
         D[FastMCP Server<br/>main.py]
         D1[get_cost Tool]
         D2[run_finops_audit Tool]
         D3[get_budget_status Tool]
     end
-    
+
     subgraph "Business Logic Layer"
         E[Configuration<br/>config.py]
         F[Error Handling<br/>error_handling.py]
@@ -28,7 +28,7 @@ graph TB
         H[Optimized Cost<br/>optimized_cost.py]
         I[Utilities<br/>util.py]
     end
-    
+
     subgraph "Azure Integration Layer"
         J[Azure CLI Credential]
         K[Azure SDK]
@@ -37,51 +37,51 @@ graph TB
         N[Network API]
         O[Consumption API]
     end
-    
+
     subgraph "Azure Cloud"
         P[Azure Subscriptions]
         Q[Cost Data]
         R[Resource Data]
         S[Budget Data]
     end
-    
+
     A --> D
     B --> D
     C --> D
-    
+
     D --> D1
     D --> D2
     D --> D3
-    
+
     D1 --> E
     D1 --> F
     D1 --> G
     D1 --> H
-    
+
     D2 --> E
     D2 --> F
     D2 --> I
-    
+
     D3 --> E
     D3 --> F
     D3 --> I
-    
+
     E --> J
     F --> K
     G --> K
     H --> K
     I --> K
-    
+
     K --> L
     K --> M
     K --> N
     K --> O
-    
+
     L --> Q
     M --> R
     N --> R
     O --> S
-    
+
     P --> Q
     P --> R
     P --> S
@@ -113,7 +113,7 @@ azure-finops-mcp-server/
 
 ### 2. MCP Protocol Layer
 - **Purpose**: Expose Azure FinOps capabilities as MCP tools
-- **Components**: 
+- **Components**:
   - FastMCP server framework
   - Tool definitions (get_cost, run_finops_audit, get_budget_status)
 - **Responsibilities**:
@@ -164,17 +164,17 @@ sequenceDiagram
     participant Config
     participant CostProc as Cost Processor
     participant Azure
-    
+
     Client->>MCP: get_cost(params)
     MCP->>Config: Load configuration
     Config-->>MCP: Config settings
     MCP->>CostProc: Process request
-    
+
     loop For each subscription (parallel)
         CostProc->>Azure: Query cost data
         Azure-->>CostProc: Cost results
     end
-    
+
     CostProc->>CostProc: Aggregate results
     CostProc-->>MCP: Formatted data
     MCP-->>Client: Cost report
@@ -187,10 +187,10 @@ sequenceDiagram
     participant MCP
     participant Audit as Audit Engine
     participant Azure
-    
+
     Client->>MCP: run_finops_audit(params)
     MCP->>Audit: Initialize audit
-    
+
     par VM Audit
         Audit->>Azure: List VMs
         Azure-->>Audit: VM data
@@ -204,7 +204,7 @@ sequenceDiagram
         Azure-->>Audit: IP data
         Audit->>Audit: Find unassociated IPs
     end
-    
+
     Audit->>Audit: Calculate waste
     Audit-->>MCP: Audit report
     MCP-->>Client: FinOps recommendations
@@ -260,7 +260,7 @@ graph LR
     C --> D[Access Token]
     D --> E[MCP Server]
     E --> F[Azure APIs]
-    
+
     style D fill:#f9f,stroke:#333,stroke-width:2px
 ```
 

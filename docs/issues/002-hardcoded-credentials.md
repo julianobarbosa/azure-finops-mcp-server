@@ -38,7 +38,7 @@ from typing import Optional
 class Config:
     AZURE_SUBSCRIPTION_ID: Optional[str] = os.environ.get('AZURE_SUBSCRIPTION_ID')
     RESOURCE_GROUP_PATTERNS: list = os.environ.get('RG_PATTERNS', '').split(',')
-    
+
     @classmethod
     def validate(cls):
         if not cls.AZURE_SUBSCRIPTION_ID:

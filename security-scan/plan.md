@@ -7,7 +7,7 @@ Security analysis of Azure FinOps MCP Server revealed 7 vulnerabilities ranging 
 ## Risk Summary
 - **Critical**: 0 vulnerabilities
 - **High**: 1 vulnerability (MD5 hash usage)
-- **Medium**: 0 vulnerabilities  
+- **Medium**: 0 vulnerabilities
 - **Low**: 6 vulnerabilities (subprocess usage, random generation)
 - **Total**: 7 vulnerabilities found
 
@@ -17,7 +17,7 @@ Security analysis of Azure FinOps MCP Server revealed 7 vulnerabilities ranging 
 **Location**: `azure_finops_mcp_server/helpers/cache_manager.py:53`
 **Status**: ⚠️ PENDING
 **Risk**: MD5 is cryptographically broken and unsuitable for security purposes
-**Details**: 
+**Details**:
 ```python
 key_hash = hashlib.md5(key_data.encode()).hexdigest()
 ```
@@ -139,7 +139,7 @@ result = subprocess.run(["az", "account", "show", "--output", "json"], ...)
 2. **SHORT TERM (Low Severity with Quick Fixes)**
    - Add clarifying comments for non-cryptographic random usage
    - Document subprocess security considerations
-   
+
 3. **MEDIUM TERM (Process Improvements)**
    - Pin dependency versions
    - Implement rate limiting

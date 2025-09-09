@@ -1,8 +1,8 @@
 # Architecture Validation Report
 
-**Project**: Azure FinOps MCP Server  
-**Date**: 2025-01-09  
-**Validator**: Architecture Validation Checklist v1.0  
+**Project**: Azure FinOps MCP Server
+**Date**: 2025-01-09
+**Validator**: Architecture Validation Checklist v1.0
 **Overall Score**: 142/142 (100%) ✅
 
 ## Executive Summary
@@ -434,6 +434,6 @@ The Azure FinOps MCP Server has successfully passed the architecture validation 
 
 ---
 
-*Validation Completed: 2025-01-09*  
-*Validator: Architecture Validation Checklist v1.0*  
+*Validation Completed: 2025-01-09*
+*Validator: Architecture Validation Checklist v1.0*
 *Repository: github.com/julianobarbosa/azure-finops-mcp-server*

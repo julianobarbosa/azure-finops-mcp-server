@@ -48,7 +48,7 @@ async def get_subscription_cost(subscription_id: str, credential, query_definiti
     return process_result(result)
 
 async def get_all_costs(subscriptions: List[str], credential, query_definition):
-    tasks = [get_subscription_cost(sub_id, credential, query_definition) 
+    tasks = [get_subscription_cost(sub_id, credential, query_definition)
              for sub_id in subscriptions]
     results = await asyncio.gather(*tasks)
     return results
@@ -71,10 +71,10 @@ def get_all_costs_parallel(subscriptions, credential, query_definition):
     with ThreadPoolExecutor(max_workers=5) as executor:
         futures = []
         for sub_id in subscriptions:
-            future = executor.submit(process_subscription, 
+            future = executor.submit(process_subscription,
                                    (sub_id, credential, query_definition))
             futures.append(future)
-        
+
         results = {}
         for future in as_completed(futures):
             sub_id, result = future.result()

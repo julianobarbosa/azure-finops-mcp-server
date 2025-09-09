@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from azure.mgmt.network import NetworkManagementClient
 
 from azure_finops_mcp_server.config import get_config
-from azure_finops_mcp_server.helpers.azure_utils import calculate_yearly_cost, extract_resource_group, format_cost
+from azure_finops_mcp_server.helpers.azure_utils import extract_resource_group
 
 logger = logging.getLogger(__name__)
 

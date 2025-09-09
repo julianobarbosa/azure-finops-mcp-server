@@ -1,6 +1,6 @@
 """Common Azure resource utilities to eliminate code duplication."""
 
-from typing import Any, Dict, Optional
+from typing import Dict
 
 
 def extract_resource_group(resource_id: str) -> str:
@@ -17,7 +17,9 @@ def extract_resource_group(resource_id: str) -> str:
         Resource group name
 
     Example:
-        >>> extract_resource_group("/subscriptions/123/resourceGroups/myRG/providers/Microsoft.Compute/virtualMachines/myVM")
+        >>> extract_resource_group(
+        ...     "/subscriptions/123/resourceGroups/myRG/providers/Microsoft.Compute/virtualMachines/myVM"
+        ... )
         'myRG'
     """
     try:

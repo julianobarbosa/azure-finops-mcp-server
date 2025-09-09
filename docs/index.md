@@ -17,7 +17,7 @@ The Azure FinOps MCP Server brings powerful cloud cost management capabilities d
 ## 🚀 What's New in v2.0.0
 
 - **100% Architecture Compliance** - Achieved perfect score (142/142) in comprehensive architecture validation
-- **4.9x Performance Boost** - Parallel processing and optimized batch operations for lightning-fast analysis  
+- **4.9x Performance Boost** - Parallel processing and optimized batch operations for lightning-fast analysis
 - **Production-Ready Security** - All high-severity issues resolved with enterprise-grade security posture
 - **Modular Design** - Refactored into focused, maintainable modules (<50 lines per function)
 
@@ -81,7 +81,7 @@ Add to your Claude Desktop configuration:
 ### Cost Analysis Query
 > "What were my Azure costs by service for the last 30 days?"
 
-### Waste Audit  
+### Waste Audit
 > "Find all stopped VMs and unattached disks in the eastus region"
 
 ### Budget Review
@@ -97,7 +97,7 @@ graph TB
     subgraph "AI Assistant Layer"
         A[Claude/ChatGPT] -->|MCP Protocol| B[MCP Client]
     end
-    
+
     subgraph "MCP Server"
         B --> C[Request Handler]
         C --> D[Tool Router]
@@ -105,14 +105,14 @@ graph TB
         D --> F[Audit Engine]
         D --> G[Budget Manager]
     end
-    
+
     subgraph "Azure Integration"
         E --> H[Azure SDK]
         F --> H
         G --> H
         H --> I[Azure APIs]
     end
-    
+
     subgraph "Performance Layer"
         J[Cache Manager] --> E
         J --> F

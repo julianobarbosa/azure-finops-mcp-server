@@ -65,22 +65,18 @@ class AzureClientFactory(ABC):
     @abstractmethod
     def create_compute_client(self, subscription_id: str) -> ComputeClientProtocol:
         """Create a compute management client."""
-        pass
 
     @abstractmethod
     def create_network_client(self, subscription_id: str) -> NetworkClientProtocol:
         """Create a network management client."""
-        pass
 
     @abstractmethod
     def create_consumption_client(self, subscription_id: str) -> ConsumptionClientProtocol:
         """Create a consumption management client."""
-        pass
 
     @abstractmethod
     def create_cost_client(self) -> CostClientProtocol:
         """Create a cost management client."""
-        pass
 
 
 class DefaultAzureClientFactory(AzureClientFactory):

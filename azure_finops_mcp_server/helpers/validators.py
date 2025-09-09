@@ -2,7 +2,7 @@
 
 import logging
 import re
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from functools import wraps
 from typing import Any, Dict, List, Optional, Union
 
@@ -439,7 +439,6 @@ class InputSanitizer:
 
 
 # Example usage with decorated functions
-from datetime import timedelta
 
 
 @validate_input(

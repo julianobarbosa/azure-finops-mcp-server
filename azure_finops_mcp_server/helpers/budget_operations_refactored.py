@@ -1,12 +1,8 @@
 """Refactored budget operations for Azure FinOps with smaller, focused functions."""
 
 import logging
-from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from azure.mgmt.consumption import ConsumptionManagementClient
-
-from azure_finops_mcp_server.config import get_config
 from azure_finops_mcp_server.helpers.azure_client_factory import get_client_factory
 from azure_finops_mcp_server.helpers.azure_utils import format_cost
 
@@ -231,7 +227,7 @@ def generate_budget_alerts(budget_detail: Dict[str, Any]) -> List[str]:
 
     # Check forecast
     if budget_detail.get("forecast_percentage", 0) > 100:
-        alerts.append(f"Budget '{name}' is forecasted to exceed by {budget_detail['forecast_percentage']-100:.1f}%")
+        alerts.append(f"Budget '{name}' is forecasted to exceed by {budget_detail['forecast_percentage'] - 100:.1f}%")
 
     return alerts
 
@@ -336,7 +332,8 @@ def generate_budget_recommendations(budget_info: Dict[str, Any]) -> List[str]:
     # Check for critical budgets
     if summary.get("budgets_critical", 0) > 0:
         recommendations.append(
-            f"WARNING: {summary['budgets_critical']} budget(s) are at critical level (>90%). Consider cost optimization."
+            f"WARNING: {
+                summary['budgets_critical']} budget(s) are at critical level (>90%). Consider cost optimization."
         )
 
     # Check overall spending
@@ -467,7 +464,7 @@ def analyze_spending_trends(budget_info: Dict[str, Any]) -> List[str]:
     for budget in budgets:
         if budget.get("forecast_spend") and budget.get("current_spend"):
             forecast = budget["forecast_spend"].get("amount", 0)
-            current = budget["current_spend"].get("amount", 0)
+            budget["current_spend"].get("amount", 0)
             if forecast > budget.get("amount", 0) * 1.1:
                 trends.append(f"{budget['name']} is forecasted to exceed budget by >10%")
 

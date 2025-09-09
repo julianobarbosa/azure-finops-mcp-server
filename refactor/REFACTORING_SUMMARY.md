@@ -186,7 +186,7 @@ Successfully completed Phase 1 and Phase 2 of the comprehensive refactoring plan
    ```python
    # Old
    from azure_finops_mcp_server.helpers.util import get_stopped_vms
-   
+
    # New
    from azure_finops_mcp_server.helpers.vm_operations import get_stopped_vms
    from azure_finops_mcp_server.helpers.azure_utils import extract_resource_group
@@ -196,7 +196,7 @@ Successfully completed Phase 1 and Phase 2 of the comprehensive refactoring plan
    ```python
    # Old
    cost_rate = 0.05  # Hardcoded
-   
+
    # New
    from azure_finops_mcp_server.config import get_config
    config = get_config()
@@ -207,7 +207,7 @@ Successfully completed Phase 1 and Phase 2 of the comprehensive refactoring plan
    ```python
    from tests.test_client_factory import MockAzureClientFactory
    from azure_finops_mcp_server.helpers.azure_client_factory import set_client_factory
-   
+
    mock_factory = MockAzureClientFactory()
    set_client_factory(mock_factory)
    # Your tests here

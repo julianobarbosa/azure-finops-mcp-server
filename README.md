@@ -203,11 +203,11 @@ To use this server with Claude for Desktop, you need to tell the application how
 
 After restarting, the server will launch in the background, and its tools will be available to Claude.
 
-> ⚠️ **Note:**  
-> After installing this tool (e.g., via `uv pip install azure-finops-mcp-server`), ensure the `azure-finops-mcp-server` command is available in your system's `PATH`.  
-> 
+> ⚠️ **Note:**
+> After installing this tool (e.g., via `uv pip install azure-finops-mcp-server`), ensure the `azure-finops-mcp-server` command is available in your system's `PATH`.
+>
 > To check where it's installed, run:
-> 
+>
 > ```bash
 > which azure-finops-mcp-server
 > ```
@@ -261,7 +261,7 @@ You can now ask questions about your Azure finances in plain English.
 ### Supported Clients
 - Claude Desktop
 - Amazon Q CLI
-- Any MCP-compatible client supporting tools 
+- Any MCP-compatible client supporting tools
 > View the list of clients that support MCP Servers at <https://modelcontextprotocol.io/clients>
 
 ### Tool Reference

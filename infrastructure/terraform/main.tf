@@ -1,13 +1,13 @@
 terraform {
   required_version = ">= 1.0"
-  
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 3.0"
     }
   }
-  
+
   backend "azurerm" {
     resource_group_name  = "terraform-state-rg"
     storage_account_name = "tfstateazurefinops"
@@ -57,15 +57,15 @@ resource "azurerm_storage_account" "metrics" {
   location                 = azurerm_resource_group.finops.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
-  
+
   blob_properties {
     versioning_enabled = true
-    
+
     delete_retention_policy {
       days = 7
     }
   }
-  
+
   tags = var.tags
 }
 
@@ -90,14 +90,14 @@ resource "azurerm_key_vault" "config" {
   resource_group_name = azurerm_resource_group.finops.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   sku_name            = "standard"
-  
+
   soft_delete_retention_days = 7
   purge_protection_enabled   = false
-  
+
   access_policy {
     tenant_id = data.azurerm_client_config.current.tenant_id
     object_id = data.azurerm_client_config.current.object_id
-    
+
     secret_permissions = [
       "Get",
       "List",
@@ -106,7 +106,7 @@ resource "azurerm_key_vault" "config" {
       "Purge"
     ]
   }
-  
+
   tags = var.tags
 }
 
@@ -117,7 +117,7 @@ resource "azurerm_application_insights" "monitoring" {
   resource_group_name = azurerm_resource_group.finops.name
   application_type    = "other"
   retention_in_days   = 90
-  
+
   tags = var.tags
 }
 
@@ -128,7 +128,7 @@ resource "azurerm_log_analytics_workspace" "logs" {
   resource_group_name = azurerm_resource_group.finops.name
   sku                 = "PerGB2018"
   retention_in_days   = 30
-  
+
   tags = var.tags
 }
 

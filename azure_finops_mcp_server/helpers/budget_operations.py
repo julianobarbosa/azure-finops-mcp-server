@@ -1,8 +1,7 @@
 """Budget operations for Azure FinOps."""
 
 import logging
-from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 from azure.mgmt.consumption import ConsumptionManagementClient
 
@@ -172,7 +171,8 @@ def generate_budget_recommendations(budget_info: Dict[str, Any]) -> List[str]:
     # Check for critical budgets
     if summary.get("budgets_critical", 0) > 0:
         recommendations.append(
-            f"WARNING: {summary['budgets_critical']} budget(s) are at critical level (>90%). Consider cost optimization."
+            f"WARNING: {
+                summary['budgets_critical']} budget(s) are at critical level (>90%). Consider cost optimization."
         )
 
     # Check overall spending
@@ -195,7 +195,7 @@ def generate_budget_recommendations(budget_info: Dict[str, Any]) -> List[str]:
     for budget in budget_info.get("budgets", []):
         if budget.get("forecast_percentage", 0) > 100:
             recommendations.append(
-                f"Budget '{budget['name']}' is forecasted to exceed by {budget['forecast_percentage']-100:.1f}%"
+                f"Budget '{budget['name']}' is forecasted to exceed by {budget['forecast_percentage'] - 100:.1f}%"
             )
 
     # If no budgets configured

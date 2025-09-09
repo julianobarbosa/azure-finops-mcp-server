@@ -5,12 +5,11 @@ from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
 
 from azure_finops_mcp_server.config import get_config
-from azure_finops_mcp_server.helpers.azure_client_factory import ComputeClientAdapter, get_client_factory
+from azure_finops_mcp_server.helpers.azure_client_factory import get_client_factory
 from azure_finops_mcp_server.helpers.azure_utils import (
     calculate_yearly_cost,
     extract_resource_group,
     format_cost,
-    is_orphaned_disk,
 )
 
 logger = logging.getLogger(__name__)
@@ -178,7 +177,7 @@ def calculate_disk_costs(disks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     Returns:
         List of disks with cost information added
     """
-    config = get_config()
+    get_config()
 
     for disk in disks:
         size_gb = disk["size_gb"]

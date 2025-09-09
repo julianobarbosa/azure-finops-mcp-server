@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from collections import defaultdict, deque
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
 from typing import Any, Callable, Dict, List, Optional
 
@@ -208,7 +208,7 @@ class AlertManager:
         Args:
             metrics_summary: Current metrics summary
         """
-        current_time = time.time()
+        time.time()
 
         for metric_name, config in self.thresholds.items():
             # Get metric value

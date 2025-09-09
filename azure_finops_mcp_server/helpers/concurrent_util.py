@@ -4,7 +4,7 @@ import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
 

@@ -6,7 +6,7 @@
   "current_phase": 3,
   "completed_tasks": [
     "Extract resource ID parsing utility",
-    "Centralize hardcoded cost rates to config", 
+    "Centralize hardcoded cost rates to config",
     "Split get_detailed_disk_audit function",
     "Fix N+1 query pattern in vm_operations",
     "Update all files to use new utilities",

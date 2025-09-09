@@ -44,13 +44,13 @@ def get_cost(...):  # 160 lines!
 
 ### Step 1: Extract Parameter Validation
 ```python
-def validate_cost_parameters(start_date: Optional[str], 
+def validate_cost_parameters(start_date: Optional[str],
                             end_date: Optional[str],
                             time_range_days: Optional[int]) -> None:
     """Validate input parameters for cost query."""
     if not start_date and not time_range_days:
         raise ValueError("Either start_date or time_range_days must be provided")
-    
+
     if start_date and not end_date:
         raise ValueError("end_date required when start_date is provided")
 ```
@@ -58,7 +58,7 @@ def validate_cost_parameters(start_date: Optional[str],
 ### Step 2: Extract Time Period Calculation
 ```python
 def calculate_time_period(start_date: Optional[str],
-                         end_date: Optional[str], 
+                         end_date: Optional[str],
                          time_range_days: Optional[int]) -> QueryTimePeriod:
     """Calculate the time period for cost query."""
     if start_date and end_date:
@@ -82,16 +82,16 @@ def build_cost_query(time_period: QueryTimePeriod,
         QueryGrouping(type='Dimension', name=dimension)
         for dimension in group_by
     ]
-    
+
     dataset = QueryDataset(
         granularity='None',
         aggregation={'totalCost': QueryAggregation(name='Cost', function='Sum')},
         grouping=grouping
     )
-    
+
     if filters:
         dataset.filter = build_query_filter(filters)
-    
+
     return QueryDefinition(
         type='Usage',
         timeframe='Custom',
@@ -105,23 +105,23 @@ def build_cost_query(time_period: QueryTimePeriod,
 class CostDataFetcher:
     def __init__(self, credential):
         self.credential = credential
-    
-    def fetch_subscription_costs(self, 
+
+    def fetch_subscription_costs(self,
                                 subscription_id: str,
                                 query: QueryDefinition) -> Dict:
         """Fetch cost data for a single subscription."""
         client = CostManagementClient(
-            self.credential, 
+            self.credential,
             base_url="https://management.azure.com"
         )
-        
+
         result = client.query.usage(
             scope=f"/subscriptions/{subscription_id}",
             parameters=query
         )
-        
+
         return self._process_query_result(result)
-    
+
     def _process_query_result(self, result) -> Dict:
         """Process raw query results into structured format."""
         # Processing logic here
@@ -143,38 +143,38 @@ async def get_cost(
     """Refactored, clean main function."""
     # Step 1: Validate
     validate_cost_parameters(start_date_iso, end_date_iso, time_range_days)
-    
+
     # Step 2: Prepare query
     time_period = calculate_time_period(start_date_iso, end_date_iso, time_range_days)
     query = build_cost_query(time_period, group_by_dimensions.split(','), tags)
-    
+
     # Step 3: Get subscriptions
     subscriptions = get_target_subscriptions(filter_subscription_names, filter_subscription_ids)
-    
+
     # Step 4: Fetch costs
     fetcher = CostDataFetcher(get_credential())
     all_costs = {}
-    
+
     for sub_id in subscriptions:
         try:
             costs = fetcher.fetch_subscription_costs(sub_id, query)
             all_costs[sub_id] = costs
         except Exception as e:
             logger.error(f"Failed to fetch costs for {sub_id}: {e}")
-    
+
     # Step 5: Format response
     return format_cost_response(all_costs, time_period)
 ```
 
 ## Other Functions Needing Refactoring
 
-### get_detailed_disk_audit() 
+### get_detailed_disk_audit()
 - File: `azure_finops_mcp_server/helpers/util.py`
 - Lines: 222-326 (104 lines)
 - Should be split into: disk fetching, categorization, cost calculation
 
 ### run_finops_audit()
-- File: `azure_finops_mcp_server/main.py`  
+- File: `azure_finops_mcp_server/main.py`
 - Lines: 184-263 (79 lines)
 - Should be split into: individual audit functions
 

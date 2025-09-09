@@ -19,7 +19,7 @@ The codebase directly instantiates Azure SDK clients throughout, making it impos
 def get_stopped_vms(credential, subscription_id, regions=None):
     # Direct instantiation - cannot mock
     compute_client = ComputeManagementClient(credential, subscription_id)
-    
+
     for vm in compute_client.virtual_machines.list_all():
         # Business logic mixed with Azure SDK calls
         instance_view = compute_client.virtual_machines.instance_view(...)
@@ -44,7 +44,7 @@ class AzureComputeClient(ABC):
     @abstractmethod
     def list_all_vms(self) -> List[VirtualMachine]:
         pass
-    
+
     @abstractmethod
     def get_vm_power_state(self, resource_group: str, vm_name: str) -> str:
         pass
@@ -61,10 +61,10 @@ class AzureCostClient(ABC):
 class AzureComputeClientImpl(AzureComputeClient):
     def __init__(self, credential, subscription_id):
         self._client = ComputeManagementClient(credential, subscription_id)
-    
+
     def list_all_vms(self) -> List[VirtualMachine]:
         return list(self._client.virtual_machines.list_all())
-    
+
     def get_vm_power_state(self, resource_group: str, vm_name: str) -> str:
         view = self._client.virtual_machines.instance_view(resource_group, vm_name)
         return self._extract_power_state(view)
@@ -76,20 +76,20 @@ class AzureComputeClientImpl(AzureComputeClient):
 def get_stopped_vms(compute_client: AzureComputeClient, regions: Optional[List[str]] = None):
     """Now testable with mock client"""
     vms = compute_client.list_all_vms()
-    
+
     stopped_vms = []
     for vm in vms:
         if regions and vm.location not in regions:
             continue
-            
+
         power_state = compute_client.get_vm_power_state(
             resource_group=extract_resource_group(vm.id),
             vm_name=vm.name
         )
-        
+
         if power_state == "stopped":
             stopped_vms.append(vm)
-    
+
     return stopped_vms
 ```
 
@@ -107,10 +107,10 @@ def test_get_stopped_vms_filters_by_region():
         create_mock_vm("vm2", "westus"),
     ]
     mock_client.get_vm_power_state.return_value = "stopped"
-    
+
     # Act
     result = get_stopped_vms(mock_client, regions=["eastus"])
-    
+
     # Assert
     assert len(result) == 1
     assert result[0].name == "vm1"

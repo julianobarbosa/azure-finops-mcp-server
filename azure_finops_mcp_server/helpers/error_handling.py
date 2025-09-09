@@ -11,37 +11,25 @@ logger = logging.getLogger(__name__)
 class AzureFinOpsError(Exception):
     """Base exception for Azure FinOps operations."""
 
-    pass
-
 
 class AzureAuthenticationError(AzureFinOpsError):
     """Authentication-related errors."""
-
-    pass
 
 
 class AzureAPIError(AzureFinOpsError):
     """Azure API call errors."""
 
-    pass
-
 
 class AzureResourceNotFoundError(AzureFinOpsError):
     """Resource not found errors."""
-
-    pass
 
 
 class AzureRateLimitError(AzureFinOpsError):
     """Rate limiting errors."""
 
-    pass
-
 
 class AzureConfigurationError(AzureFinOpsError):
     """Configuration-related errors."""
-
-    pass
 
 
 class ErrorHandler:

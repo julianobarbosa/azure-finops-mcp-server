@@ -3,7 +3,7 @@
 import logging
 import time
 from collections import defaultdict
-from concurrent.futures import Future, ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from azure_finops_mcp_server.config import get_config
@@ -162,7 +162,7 @@ class ParallelResourceProcessor:
                         if result:
                             results.append(result)
                     except Exception as e:
-                        resource = futures[future]
+                        futures[future]
                         logger.error(f"Failed to process resource: {str(e)}")
 
         return results

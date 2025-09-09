@@ -151,10 +151,10 @@ class RateLimiter:
         Returns:
             Dictionary with rate limiting statistics
         """
-        stats = {}
+        stats: Dict[str, float] = {}
 
         if not self.config.enabled:
-            return {"enabled": False}
+            return {"enabled": 0.0}  # Return float for consistency
 
         bucket_key = key if self.config.per_subscription and key else "global"
 
@@ -162,17 +162,17 @@ class RateLimiter:
             bucket = self.buckets[bucket_key]
             with bucket.lock:
                 bucket._refill()
-                stats["tokens_available"] = bucket.tokens
-                stats["capacity"] = bucket.capacity
-                stats["rate"] = bucket.rate
+                stats["tokens_available"] = float(bucket.tokens)
+                stats["capacity"] = float(bucket.capacity)
+                stats["rate"] = float(bucket.rate)
 
         if bucket_key in self.request_history:
             history = self.request_history[bucket_key]
             if history:
                 now = time.time()
                 recent_requests = sum(1 for t in history if now - t < self.config.window_seconds)
-                stats["recent_requests"] = recent_requests
-                stats["requests_per_second"] = recent_requests / self.config.window_seconds
+                stats["recent_requests"] = float(recent_requests)
+                stats["requests_per_second"] = float(recent_requests) / float(self.config.window_seconds)
 
         return stats
 

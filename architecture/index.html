@@ -1,0 +1,1329 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="Enterprise-grade Azure FinOps capabilities for AI assistants" name="description"/>
+<meta content="Juliano Barbosa" name="author"/>
+<link href="https://julianobarbosa.github.io/azure-finops-mcp-server/architecture/" rel="canonical"/>
+<link href="../quickstart/" rel="prev"/>
+<link href="validation-report/" rel="next"/>
+<link href="../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.6.19" name="generator"/>
+<title>Overview - Azure FinOps MCP Server</title>
+<link href="../assets/stylesheets/main.7e37652d.min.css" rel="stylesheet"/>
+<link href="../assets/stylesheets/palette.06af60db.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<link href="../assets/_mkdocstrings.css" rel="stylesheet"/>
+<script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+<script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+</head>
+<body data-md-color-accent="light-blue" data-md-color-primary="blue" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#azure-finops-mcp-server-architecture">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<div data-md-color-scheme="default" data-md-component="outdated" hidden="">
+</div>
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="Azure FinOps MCP Server" class="md-header__button md-logo" data-md-component="logo" href=".." title="Azure FinOps MCP Server">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 19c0 .34.04.67.09 1H6.5c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04S19 9.05 19 11c1.15.13 2.1.63 2.86 1.5.51.57.84 1.21 1 1.92A5.9 5.9 0 0 0 19 13c-3.31 0-6 2.69-6 6m4.75.43-1.59-1.59L15 19l2.75 3 4.75-4.75-1.16-1.41z"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            Azure FinOps MCP Server
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="light-blue" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="blue" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="light-blue" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="blue" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/julianobarbosa/azure-finops-mcp-server" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2" fill="currentColor"></path></svg>
+</div>
+<div class="md-source__repository">
+    julianobarbosa/azure-finops-mcp-server
+  </div>
+</a>
+</div>
+</nav>
+<nav aria-label="Tabs" class="md-tabs" data-md-component="tabs">
+<div class="md-grid">
+<ul class="md-tabs__list">
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="..">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../changelog/">
+        
+  
+  
+    
+  
+  What's New
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../getting-started/installation/">
+          
+  
+  
+    
+  
+  Getting Started
+
+        </a>
+</li>
+<li class="md-tabs__item md-tabs__item--active">
+<a class="md-tabs__link" href="./">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../api/tools/">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../deployment/">
+        
+  
+  
+    
+  
+  Deployment
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="../license/">
+        
+  
+  
+    
+  
+  License
+
+      </a>
+</li>
+<li class="md-tabs__item">
+<a class="md-tabs__link" href="https://github.com/julianobarbosa/azure-finops-mcp-server">
+        
+  
+  
+    
+  
+  GitHub
+
+      </a>
+</li>
+</ul>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary md-nav--lifted" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="Azure FinOps MCP Server" class="md-nav__button md-logo" data-md-component="logo" href=".." title="Azure FinOps MCP Server">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 19c0 .34.04.67.09 1H6.5c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04S19 9.05 19 11c1.15.13 2.1.63 2.86 1.5.51.57.84 1.21 1 1.92A5.9 5.9 0 0 0 19 13c-3.31 0-6 2.69-6 6m4.75.43-1.59-1.59L15 19l2.75 3 4.75-4.75-1.16-1.41z"></path></svg>
+</a>
+    Azure FinOps MCP Server
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/julianobarbosa/azure-finops-mcp-server" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2" fill="currentColor"></path></svg>
+</div>
+<div class="md-source__repository">
+    julianobarbosa/azure-finops-mcp-server
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="..">
+<span class="md-ellipsis">
+    Home
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../changelog/">
+<span class="md-ellipsis">
+    What's New
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+<span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../getting-started/installation/">
+<span class="md-ellipsis">
+    Installation
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../quickstart/">
+<span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+<span class="md-ellipsis">
+    Architecture
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            Architecture
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    Overview
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    Overview
+    
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#overview">
+<span class="md-ellipsis">
+      Overview
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#architecture-diagram">
+<span class="md-ellipsis">
+      Architecture Diagram
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#component-architecture">
+<span class="md-ellipsis">
+      Component Architecture
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#layer-descriptions">
+<span class="md-ellipsis">
+      Layer Descriptions
+    </span>
+</a>
+<nav aria-label="Layer Descriptions" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-client-layer">
+<span class="md-ellipsis">
+      1. Client Layer
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-mcp-protocol-layer">
+<span class="md-ellipsis">
+      2. MCP Protocol Layer
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-business-logic-layer">
+<span class="md-ellipsis">
+      3. Business Logic Layer
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-azure-integration-layer">
+<span class="md-ellipsis">
+      4. Azure Integration Layer
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#5-azure-cloud-layer">
+<span class="md-ellipsis">
+      5. Azure Cloud Layer
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#data-flow">
+<span class="md-ellipsis">
+      Data Flow
+    </span>
+</a>
+<nav aria-label="Data Flow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cost-analysis-flow">
+<span class="md-ellipsis">
+      Cost Analysis Flow
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#finops-audit-flow">
+<span class="md-ellipsis">
+      FinOps Audit Flow
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#key-design-decisions">
+<span class="md-ellipsis">
+      Key Design Decisions
+    </span>
+</a>
+<nav aria-label="Key Design Decisions" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-security-first">
+<span class="md-ellipsis">
+      1. Security First
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-performance-optimization">
+<span class="md-ellipsis">
+      2. Performance Optimization
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-error-resilience">
+<span class="md-ellipsis">
+      3. Error Resilience
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-configuration-management">
+<span class="md-ellipsis">
+      4. Configuration Management
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#5-extensibility">
+<span class="md-ellipsis">
+      5. Extensibility
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#scalability-considerations">
+<span class="md-ellipsis">
+      Scalability Considerations
+    </span>
+</a>
+<nav aria-label="Scalability Considerations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#current-capabilities">
+<span class="md-ellipsis">
+      Current Capabilities
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#scaling-strategies">
+<span class="md-ellipsis">
+      Scaling Strategies
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#security-architecture">
+<span class="md-ellipsis">
+      Security Architecture
+    </span>
+</a>
+<nav aria-label="Security Architecture" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#authentication-flow">
+<span class="md-ellipsis">
+      Authentication Flow
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#security-layers">
+<span class="md-ellipsis">
+      Security Layers
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#monitoring-observability">
+<span class="md-ellipsis">
+      Monitoring &amp; Observability
+    </span>
+</a>
+<nav aria-label="Monitoring &amp; Observability" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#logging-strategy">
+<span class="md-ellipsis">
+      Logging Strategy
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#metrics">
+<span class="md-ellipsis">
+      Metrics
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#future-architecture-enhancements">
+<span class="md-ellipsis">
+      Future Architecture Enhancements
+    </span>
+</a>
+<nav aria-label="Future Architecture Enhancements" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#planned-improvements">
+<span class="md-ellipsis">
+      Planned Improvements
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#extension-points">
+<span class="md-ellipsis">
+      Extension Points
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#development-workflow">
+<span class="md-ellipsis">
+      Development Workflow
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#deployment-architecture">
+<span class="md-ellipsis">
+      Deployment Architecture
+    </span>
+</a>
+<nav aria-label="Deployment Architecture" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#local-deployment-current">
+<span class="md-ellipsis">
+      Local Deployment (Current)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#future-cloud-deployment-option">
+<span class="md-ellipsis">
+      Future Cloud Deployment Option
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="validation-report/">
+<span class="md-ellipsis">
+    Validation Report
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+<span class="md-ellipsis">
+    API Reference
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            API Reference
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../api/tools/">
+<span class="md-ellipsis">
+    MCP Tools
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../deployment/">
+<span class="md-ellipsis">
+    Deployment
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../license/">
+<span class="md-ellipsis">
+    License
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="https://github.com/julianobarbosa/azure-finops-mcp-server">
+<span class="md-ellipsis">
+    GitHub
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#overview">
+<span class="md-ellipsis">
+      Overview
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#architecture-diagram">
+<span class="md-ellipsis">
+      Architecture Diagram
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#component-architecture">
+<span class="md-ellipsis">
+      Component Architecture
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#layer-descriptions">
+<span class="md-ellipsis">
+      Layer Descriptions
+    </span>
+</a>
+<nav aria-label="Layer Descriptions" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-client-layer">
+<span class="md-ellipsis">
+      1. Client Layer
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-mcp-protocol-layer">
+<span class="md-ellipsis">
+      2. MCP Protocol Layer
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-business-logic-layer">
+<span class="md-ellipsis">
+      3. Business Logic Layer
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-azure-integration-layer">
+<span class="md-ellipsis">
+      4. Azure Integration Layer
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#5-azure-cloud-layer">
+<span class="md-ellipsis">
+      5. Azure Cloud Layer
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#data-flow">
+<span class="md-ellipsis">
+      Data Flow
+    </span>
+</a>
+<nav aria-label="Data Flow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#cost-analysis-flow">
+<span class="md-ellipsis">
+      Cost Analysis Flow
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#finops-audit-flow">
+<span class="md-ellipsis">
+      FinOps Audit Flow
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#key-design-decisions">
+<span class="md-ellipsis">
+      Key Design Decisions
+    </span>
+</a>
+<nav aria-label="Key Design Decisions" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-security-first">
+<span class="md-ellipsis">
+      1. Security First
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-performance-optimization">
+<span class="md-ellipsis">
+      2. Performance Optimization
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-error-resilience">
+<span class="md-ellipsis">
+      3. Error Resilience
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#4-configuration-management">
+<span class="md-ellipsis">
+      4. Configuration Management
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#5-extensibility">
+<span class="md-ellipsis">
+      5. Extensibility
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#scalability-considerations">
+<span class="md-ellipsis">
+      Scalability Considerations
+    </span>
+</a>
+<nav aria-label="Scalability Considerations" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#current-capabilities">
+<span class="md-ellipsis">
+      Current Capabilities
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#scaling-strategies">
+<span class="md-ellipsis">
+      Scaling Strategies
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#security-architecture">
+<span class="md-ellipsis">
+      Security Architecture
+    </span>
+</a>
+<nav aria-label="Security Architecture" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#authentication-flow">
+<span class="md-ellipsis">
+      Authentication Flow
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#security-layers">
+<span class="md-ellipsis">
+      Security Layers
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#monitoring-observability">
+<span class="md-ellipsis">
+      Monitoring &amp; Observability
+    </span>
+</a>
+<nav aria-label="Monitoring &amp; Observability" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#logging-strategy">
+<span class="md-ellipsis">
+      Logging Strategy
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#metrics">
+<span class="md-ellipsis">
+      Metrics
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#future-architecture-enhancements">
+<span class="md-ellipsis">
+      Future Architecture Enhancements
+    </span>
+</a>
+<nav aria-label="Future Architecture Enhancements" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#planned-improvements">
+<span class="md-ellipsis">
+      Planned Improvements
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#extension-points">
+<span class="md-ellipsis">
+      Extension Points
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#development-workflow">
+<span class="md-ellipsis">
+      Development Workflow
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#deployment-architecture">
+<span class="md-ellipsis">
+      Deployment Architecture
+    </span>
+</a>
+<nav aria-label="Deployment Architecture" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#local-deployment-current">
+<span class="md-ellipsis">
+      Local Deployment (Current)
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#future-cloud-deployment-option">
+<span class="md-ellipsis">
+      Future Cloud Deployment Option
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="azure-finops-mcp-server-architecture">Azure FinOps MCP Server Architecture<a class="headerlink" href="#azure-finops-mcp-server-architecture" title="Permanent link">¶</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">¶</a></h2>
+<p>The Azure FinOps MCP Server is a Model Context Protocol (MCP) server that provides Azure cost management and optimization capabilities to AI assistants. It follows a modular, layered architecture designed for security, performance, and maintainability.</p>
+<h2 id="architecture-diagram">Architecture Diagram<a class="headerlink" href="#architecture-diagram" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>graph TB
+    subgraph "Client Layer"
+        A[Claude Desktop]
+        B[Amazon Q CLI]
+        C[Other MCP Clients]
+    end
+
+    subgraph "MCP Protocol Layer"
+        D[FastMCP Server<br/>main.py]
+        D1[get_cost Tool]
+        D2[run_finops_audit Tool]
+        D3[get_budget_status Tool]
+    end
+
+    subgraph "Business Logic Layer"
+        E[Configuration<br/>config.py]
+        F[Error Handling<br/>error_handling.py]
+        G[Concurrent Processing<br/>concurrent_util.py]
+        H[Optimized Cost<br/>optimized_cost.py]
+        I[Utilities<br/>util.py]
+    end
+
+    subgraph "Azure Integration Layer"
+        J[Azure CLI Credential]
+        K[Azure SDK]
+        L[Cost Management API]
+        M[Compute API]
+        N[Network API]
+        O[Consumption API]
+    end
+
+    subgraph "Azure Cloud"
+        P[Azure Subscriptions]
+        Q[Cost Data]
+        R[Resource Data]
+        S[Budget Data]
+    end
+
+    A --&gt; D
+    B --&gt; D
+    C --&gt; D
+
+    D --&gt; D1
+    D --&gt; D2
+    D --&gt; D3
+
+    D1 --&gt; E
+    D1 --&gt; F
+    D1 --&gt; G
+    D1 --&gt; H
+
+    D2 --&gt; E
+    D2 --&gt; F
+    D2 --&gt; I
+
+    D3 --&gt; E
+    D3 --&gt; F
+    D3 --&gt; I
+
+    E --&gt; J
+    F --&gt; K
+    G --&gt; K
+    H --&gt; K
+    I --&gt; K
+
+    K --&gt; L
+    K --&gt; M
+    K --&gt; N
+    K --&gt; O
+
+    L --&gt; Q
+    M --&gt; R
+    N --&gt; R
+    O --&gt; S
+
+    P --&gt; Q
+    P --&gt; R
+    P --&gt; S
+</code></pre>
+<h2 id="component-architecture">Component Architecture<a class="headerlink" href="#component-architecture" title="Permanent link">¶</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a>azure-finops-mcp-server/
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a>├── azure_finops_mcp_server/
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a>│   ├── main.py                    # MCP server entry point and tool definitions
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a>│   ├── config.py                  # Configuration management
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a>│   └── helpers/
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a>│       ├── concurrent_util.py     # Parallel processing utilities
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a>│       ├── error_handling.py      # Error handling framework
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a>│       ├── optimized_cost.py      # Optimized cost processing
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a>│       └── util.py                 # Azure operations utilities
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a>├── docs/                           # Documentation
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a>├── tests/                          # Test suite
+</span><span id="__span-0-12"><a href="#__codelineno-0-12" id="__codelineno-0-12" name="__codelineno-0-12"></a>└── .env.example                    # Configuration template
+</span></code></pre></div>
+<h2 id="layer-descriptions">Layer Descriptions<a class="headerlink" href="#layer-descriptions" title="Permanent link">¶</a></h2>
+<h3 id="1-client-layer">1. Client Layer<a class="headerlink" href="#1-client-layer" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Purpose</strong>: AI assistants and MCP-compatible clients</li>
+<li><strong>Components</strong>: Claude Desktop, Amazon Q CLI, custom clients</li>
+<li><strong>Protocol</strong>: MCP over stdio/HTTP</li>
+</ul>
+<h3 id="2-mcp-protocol-layer">2. MCP Protocol Layer<a class="headerlink" href="#2-mcp-protocol-layer" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Purpose</strong>: Expose Azure FinOps capabilities as MCP tools</li>
+<li><strong>Components</strong>: </li>
+<li>FastMCP server framework</li>
+<li>Tool definitions (get_cost, run_finops_audit, get_budget_status)</li>
+<li><strong>Responsibilities</strong>:</li>
+<li>Protocol handling</li>
+<li>Request/response formatting</li>
+<li>Tool registration</li>
+</ul>
+<h3 id="3-business-logic-layer">3. Business Logic Layer<a class="headerlink" href="#3-business-logic-layer" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Purpose</strong>: Core application logic and processing</li>
+<li><strong>Components</strong>:</li>
+<li><strong>Configuration</strong> (<code>config.py</code>): Environment-based settings</li>
+<li><strong>Error Handling</strong> (<code>error_handling.py</code>): Consistent error management</li>
+<li><strong>Concurrent Processing</strong> (<code>concurrent_util.py</code>): Parallel operations</li>
+<li><strong>Optimized Cost</strong> (<code>optimized_cost.py</code>): Performance-optimized cost queries</li>
+<li><strong>Utilities</strong> (<code>util.py</code>): Azure resource operations</li>
+<li><strong>Responsibilities</strong>:</li>
+<li>Business rules implementation</li>
+<li>Data processing and aggregation</li>
+<li>Performance optimization</li>
+<li>Error recovery</li>
+</ul>
+<h3 id="4-azure-integration-layer">4. Azure Integration Layer<a class="headerlink" href="#4-azure-integration-layer" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Purpose</strong>: Interface with Azure services</li>
+<li><strong>Components</strong>:</li>
+<li>Azure CLI Credential for authentication</li>
+<li>Azure SDK clients</li>
+<li>Service-specific APIs</li>
+<li><strong>Responsibilities</strong>:</li>
+<li>Authentication management</li>
+<li>API call abstraction</li>
+<li>Response parsing</li>
+</ul>
+<h3 id="5-azure-cloud-layer">5. Azure Cloud Layer<a class="headerlink" href="#5-azure-cloud-layer" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Purpose</strong>: Azure cloud resources and data</li>
+<li><strong>Components</strong>:</li>
+<li>Multiple Azure subscriptions</li>
+<li>Cost and usage data</li>
+<li>Resource metadata</li>
+<li>Budget configurations</li>
+</ul>
+<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">¶</a></h2>
+<h3 id="cost-analysis-flow">Cost Analysis Flow<a class="headerlink" href="#cost-analysis-flow" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Client
+    participant MCP
+    participant Config
+    participant CostProc as Cost Processor
+    participant Azure
+
+    Client-&gt;&gt;MCP: get_cost(params)
+    MCP-&gt;&gt;Config: Load configuration
+    Config--&gt;&gt;MCP: Config settings
+    MCP-&gt;&gt;CostProc: Process request
+
+    loop For each subscription (parallel)
+        CostProc-&gt;&gt;Azure: Query cost data
+        Azure--&gt;&gt;CostProc: Cost results
+    end
+
+    CostProc-&gt;&gt;CostProc: Aggregate results
+    CostProc--&gt;&gt;MCP: Formatted data
+    MCP--&gt;&gt;Client: Cost report
+</code></pre>
+<h3 id="finops-audit-flow">FinOps Audit Flow<a class="headerlink" href="#finops-audit-flow" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant Client
+    participant MCP
+    participant Audit as Audit Engine
+    participant Azure
+
+    Client-&gt;&gt;MCP: run_finops_audit(params)
+    MCP-&gt;&gt;Audit: Initialize audit
+
+    par VM Audit
+        Audit-&gt;&gt;Azure: List VMs
+        Azure--&gt;&gt;Audit: VM data
+        Audit-&gt;&gt;Audit: Find stopped VMs
+    and Disk Audit
+        Audit-&gt;&gt;Azure: List disks
+        Azure--&gt;&gt;Audit: Disk data
+        Audit-&gt;&gt;Audit: Find orphaned disks
+    and IP Audit
+        Audit-&gt;&gt;Azure: List public IPs
+        Azure--&gt;&gt;Audit: IP data
+        Audit-&gt;&gt;Audit: Find unassociated IPs
+    end
+
+    Audit-&gt;&gt;Audit: Calculate waste
+    Audit--&gt;&gt;MCP: Audit report
+    MCP--&gt;&gt;Client: FinOps recommendations
+</code></pre>
+<h2 id="key-design-decisions">Key Design Decisions<a class="headerlink" href="#key-design-decisions" title="Permanent link">¶</a></h2>
+<h3 id="1-security-first">1. Security First<a class="headerlink" href="#1-security-first" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Local Execution</strong>: Server runs on user's machine</li>
+<li><strong>Credential Management</strong>: Uses Azure CLI credentials, never stores secrets</li>
+<li><strong>Read-Only Operations</strong>: Only performs read operations on Azure resources</li>
+</ul>
+<h3 id="2-performance-optimization">2. Performance Optimization<a class="headerlink" href="#2-performance-optimization" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Parallel Processing</strong>: Concurrent subscription processing (5 workers default)</li>
+<li><strong>Caching</strong>: In-memory cache with configurable TTL</li>
+<li><strong>Batch Operations</strong>: Minimize API calls through batching</li>
+</ul>
+<h3 id="3-error-resilience">3. Error Resilience<a class="headerlink" href="#3-error-resilience" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Comprehensive Error Handling</strong>: Typed exceptions for different failure modes</li>
+<li><strong>Retry Logic</strong>: Automatic retry with exponential backoff</li>
+<li><strong>Graceful Degradation</strong>: Partial results on partial failures</li>
+</ul>
+<h3 id="4-configuration-management">4. Configuration Management<a class="headerlink" href="#4-configuration-management" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Environment Variables</strong>: All settings externalized</li>
+<li><strong>Validation</strong>: Configuration validated on load</li>
+<li><strong>Multi-Environment</strong>: Support for different Azure clouds</li>
+</ul>
+<h3 id="5-extensibility">5. Extensibility<a class="headerlink" href="#5-extensibility" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Modular Design</strong>: Easy to add new tools and operations</li>
+<li><strong>Plugin Architecture</strong>: New audit checks can be added independently</li>
+<li><strong>Standard Interfaces</strong>: Consistent patterns for new components</li>
+</ul>
+<h2 id="scalability-considerations">Scalability Considerations<a class="headerlink" href="#scalability-considerations" title="Permanent link">¶</a></h2>
+<h3 id="current-capabilities">Current Capabilities<a class="headerlink" href="#current-capabilities" title="Permanent link">¶</a></h3>
+<ul>
+<li>Handles 10+ subscriptions concurrently</li>
+<li>Processes 1000s of resources per audit</li>
+<li>Sub-second response for cached data</li>
+</ul>
+<h3 id="scaling-strategies">Scaling Strategies<a class="headerlink" href="#scaling-strategies" title="Permanent link">¶</a></h3>
+<ol>
+<li><strong>Horizontal</strong>: Increase worker count for more parallelism</li>
+<li><strong>Caching</strong>: Redis/external cache for multi-instance deployment</li>
+<li><strong>Async Operations</strong>: Full async/await for better concurrency</li>
+<li><strong>Resource Pooling</strong>: Connection pool for Azure clients</li>
+</ol>
+<h2 id="security-architecture">Security Architecture<a class="headerlink" href="#security-architecture" title="Permanent link">¶</a></h2>
+<h3 id="authentication-flow">Authentication Flow<a class="headerlink" href="#authentication-flow" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>graph LR
+    A[User] --&gt; B[Azure CLI]
+    B --&gt; C[Azure AD]
+    C --&gt; D[Access Token]
+    D --&gt; E[MCP Server]
+    E --&gt; F[Azure APIs]
+
+    style D fill:#f9f,stroke:#333,stroke-width:2px
+</code></pre>
+<h3 id="security-layers">Security Layers<a class="headerlink" href="#security-layers" title="Permanent link">¶</a></h3>
+<ol>
+<li><strong>Authentication</strong>: Azure CLI/DefaultAzureCredential</li>
+<li><strong>Authorization</strong>: Azure RBAC (Reader/Cost Management Reader)</li>
+<li><strong>Data Protection</strong>: HTTPS for all API calls</li>
+<li><strong>Audit Trail</strong>: Comprehensive logging</li>
+<li><strong>Error Sanitization</strong>: Safe error messages to users</li>
+</ol>
+<h2 id="monitoring-observability">Monitoring &amp; Observability<a class="headerlink" href="#monitoring-observability" title="Permanent link">¶</a></h2>
+<h3 id="logging-strategy">Logging Strategy<a class="headerlink" href="#logging-strategy" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Structured Logging</strong>: JSON-formatted logs</li>
+<li><strong>Log Levels</strong>: Configurable (DEBUG, INFO, WARNING, ERROR)</li>
+<li><strong>Context Propagation</strong>: Request IDs for tracing</li>
+</ul>
+<h3 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">¶</a></h3>
+<ul>
+<li>API call counts and latencies</li>
+<li>Cache hit/miss rates</li>
+<li>Error rates by type</li>
+<li>Resource processing times</li>
+</ul>
+<h2 id="future-architecture-enhancements">Future Architecture Enhancements<a class="headerlink" href="#future-architecture-enhancements" title="Permanent link">¶</a></h2>
+<h3 id="planned-improvements">Planned Improvements<a class="headerlink" href="#planned-improvements" title="Permanent link">¶</a></h3>
+<ol>
+<li><strong>Service Mesh</strong>: Microservices architecture for scale</li>
+<li><strong>Event-Driven</strong>: Pub/sub for real-time cost alerts</li>
+<li><strong>ML Integration</strong>: Cost prediction and anomaly detection</li>
+<li><strong>Multi-Cloud</strong>: Support for AWS and GCP</li>
+</ol>
+<h3 id="extension-points">Extension Points<a class="headerlink" href="#extension-points" title="Permanent link">¶</a></h3>
+<ul>
+<li>Custom audit rules engine</li>
+<li>Plugin system for third-party integrations</li>
+<li>Webhook notifications</li>
+<li>Export adapters (CSV, Excel, BI tools)</li>
+</ul>
+<h2 id="development-workflow">Development Workflow<a class="headerlink" href="#development-workflow" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>graph LR
+    A[Local Development] --&gt; B[Unit Tests]
+    B --&gt; C[Integration Tests]
+    C --&gt; D[PR Review]
+    D --&gt; E[CI/CD Pipeline]
+    E --&gt; F[PyPI Release]
+    F --&gt; G[Client Update]
+</code></pre>
+<h2 id="deployment-architecture">Deployment Architecture<a class="headerlink" href="#deployment-architecture" title="Permanent link">¶</a></h2>
+<h3 id="local-deployment-current">Local Deployment (Current)<a class="headerlink" href="#local-deployment-current" title="Permanent link">¶</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a href="#__codelineno-1-1" id="__codelineno-1-1" name="__codelineno-1-1"></a>┌─────────────────┐
+</span><span id="__span-1-2"><a href="#__codelineno-1-2" id="__codelineno-1-2" name="__codelineno-1-2"></a>│  AI Assistant   │
+</span><span id="__span-1-3"><a href="#__codelineno-1-3" id="__codelineno-1-3" name="__codelineno-1-3"></a>│ (Claude Desktop)│
+</span><span id="__span-1-4"><a href="#__codelineno-1-4" id="__codelineno-1-4" name="__codelineno-1-4"></a>└────────┬────────┘
+</span><span id="__span-1-5"><a href="#__codelineno-1-5" id="__codelineno-1-5" name="__codelineno-1-5"></a>         │ stdio
+</span><span id="__span-1-6"><a href="#__codelineno-1-6" id="__codelineno-1-6" name="__codelineno-1-6"></a>┌────────▼────────┐
+</span><span id="__span-1-7"><a href="#__codelineno-1-7" id="__codelineno-1-7" name="__codelineno-1-7"></a>│  MCP Server     │
+</span><span id="__span-1-8"><a href="#__codelineno-1-8" id="__codelineno-1-8" name="__codelineno-1-8"></a>│   (Python)      │
+</span><span id="__span-1-9"><a href="#__codelineno-1-9" id="__codelineno-1-9" name="__codelineno-1-9"></a>└────────┬────────┘
+</span><span id="__span-1-10"><a href="#__codelineno-1-10" id="__codelineno-1-10" name="__codelineno-1-10"></a>         │ HTTPS
+</span><span id="__span-1-11"><a href="#__codelineno-1-11" id="__codelineno-1-11" name="__codelineno-1-11"></a>┌────────▼────────┐
+</span><span id="__span-1-12"><a href="#__codelineno-1-12" id="__codelineno-1-12" name="__codelineno-1-12"></a>│   Azure APIs    │
+</span><span id="__span-1-13"><a href="#__codelineno-1-13" id="__codelineno-1-13" name="__codelineno-1-13"></a>└─────────────────┘
+</span></code></pre></div>
+<h3 id="future-cloud-deployment-option">Future Cloud Deployment Option<a class="headerlink" href="#future-cloud-deployment-option" title="Permanent link">¶</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a href="#__codelineno-2-1" id="__codelineno-2-1" name="__codelineno-2-1"></a>┌─────────────────┐
+</span><span id="__span-2-2"><a href="#__codelineno-2-2" id="__codelineno-2-2" name="__codelineno-2-2"></a>│  AI Assistants  │
+</span><span id="__span-2-3"><a href="#__codelineno-2-3" id="__codelineno-2-3" name="__codelineno-2-3"></a>└────────┬────────┘
+</span><span id="__span-2-4"><a href="#__codelineno-2-4" id="__codelineno-2-4" name="__codelineno-2-4"></a>         │ HTTPS
+</span><span id="__span-2-5"><a href="#__codelineno-2-5" id="__codelineno-2-5" name="__codelineno-2-5"></a>┌────────▼────────┐
+</span><span id="__span-2-6"><a href="#__codelineno-2-6" id="__codelineno-2-6" name="__codelineno-2-6"></a>│  API Gateway    │
+</span><span id="__span-2-7"><a href="#__codelineno-2-7" id="__codelineno-2-7" name="__codelineno-2-7"></a>└────────┬────────┘
+</span><span id="__span-2-8"><a href="#__codelineno-2-8" id="__codelineno-2-8" name="__codelineno-2-8"></a>         │
+</span><span id="__span-2-9"><a href="#__codelineno-2-9" id="__codelineno-2-9" name="__codelineno-2-9"></a>┌────────▼────────┐
+</span><span id="__span-2-10"><a href="#__codelineno-2-10" id="__codelineno-2-10" name="__codelineno-2-10"></a>│  MCP Servers    │
+</span><span id="__span-2-11"><a href="#__codelineno-2-11" id="__codelineno-2-11" name="__codelineno-2-11"></a>│   (Container)   │
+</span><span id="__span-2-12"><a href="#__codelineno-2-12" id="__codelineno-2-12" name="__codelineno-2-12"></a>└────────┬────────┘
+</span><span id="__span-2-13"><a href="#__codelineno-2-13" id="__codelineno-2-13" name="__codelineno-2-13"></a>         │
+</span><span id="__span-2-14"><a href="#__codelineno-2-14" id="__codelineno-2-14" name="__codelineno-2-14"></a>┌────────▼────────┐
+</span><span id="__span-2-15"><a href="#__codelineno-2-15" id="__codelineno-2-15" name="__codelineno-2-15"></a>│   Azure APIs    │
+</span><span id="__span-2-16"><a href="#__codelineno-2-16" id="__codelineno-2-16" name="__codelineno-2-16"></a>└─────────────────┘
+</span></code></pre></div>
+<hr/>
+<p><em>Last Updated: 2025-01-09</em></p>
+</article>
+</div>
+<script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+<div class="md-social">
+<a class="md-social__link" href="https://github.com/julianobarbosa" rel="noopener" target="_blank" title="github.com">
+<svg viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2" fill="currentColor"></path></svg>
+</a>
+<a class="md-social__link" href="https://pypi.org/project/azure-finops-mcp-server/" rel="noopener" target="_blank" title="pypi.org">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8" fill="currentColor"></path></svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+<script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+<script type="module">import mermaid from "https://unpkg.com/mermaid@10.4.0/dist/mermaid.esm.min.mjs";
+window.mermaidConfig = {default: {
+    theme: (JSON.parse(__md_get("__palette").index == 1)) ? 'dark' : 'light',
+    startOnLoad: false
+}};</script></body>
+</html>

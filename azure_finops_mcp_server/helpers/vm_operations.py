@@ -4,7 +4,6 @@ import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional, Tuple
 
-from azure.core.exceptions import ResourceNotFoundError
 from azure.mgmt.compute import ComputeManagementClient
 
 from azure_finops_mcp_server.config import get_config
@@ -109,7 +108,9 @@ def get_stopped_vms(
     stopped_vms = []
 
     try:
-        compute_client = ComputeManagementClient(credential, subscription_id)
+        # Use factory to create compute client for better testability
+        factory = get_client_factory()
+        compute_client = factory.create_compute_client(subscription_id)
 
         # Get all VMs and filter by region
         all_vms = list(compute_client.virtual_machines.list_all())

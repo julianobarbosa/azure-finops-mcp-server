@@ -1,0 +1,27 @@
+# Locked dependencies with exact versions
+# Generated: 2025-09-09
+# Use this file for reproducible builds
+
+# Azure SDK dependencies
+azure-common==1.1.28
+azure-core==1.35.0
+azure-identity==1.24.0
+azure-mgmt-advisor==9.0.0
+azure-mgmt-compute==36.0.0
+azure-mgmt-consumption==10.0.0
+azure-mgmt-containerregistry==14.0.0
+azure-mgmt-core==1.6.0
+azure-mgmt-costmanagement==4.0.1
+azure-mgmt-monitor==7.0.0
+azure-mgmt-network==29.0.0
+azure-mgmt-resource==24.0.0
+azure-mgmt-sql==3.0.1
+azure-mgmt-storage==23.0.1
+
+# MCP dependency
+mcp==1.13.1
+
+# Additional dependencies (add as needed)
+# pytest==8.4.1
+# flake8==7.1.1
+# pre-commit==4.0.1

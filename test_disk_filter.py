@@ -16,8 +16,13 @@ def test_disk_filtering():
         # Use default Azure credentials
         credential = DefaultAzureCredential()
         
-        # Get subscription ID from environment or use a known one
-        subscription_id = os.environ.get('AZURE_SUBSCRIPTION_ID', '51f4e493-4815-4858-8bbb-f263e7fb63d6')  # hypera-pharma
+        # Get subscription ID from environment
+        subscription_id = os.environ.get('AZURE_SUBSCRIPTION_ID')
+        
+        if not subscription_id:
+            print("ERROR: AZURE_SUBSCRIPTION_ID environment variable is required")
+            print("Please set: export AZURE_SUBSCRIPTION_ID=<your-subscription-id>")
+            return
         
         print(f"Testing with subscription: {subscription_id}\n")
         

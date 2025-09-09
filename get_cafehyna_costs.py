@@ -12,7 +12,10 @@ def get_cafehyna_costs():
     """Get costs for RS_Hypera_Cafehyna resource group."""
     
     credential = DefaultAzureCredential()
-    subscription_id = '51f4e493-4815-4858-8bbb-f263e7fb63d6'  # hypera-pharma
+    subscription_id = os.environ.get('AZURE_SUBSCRIPTION_ID')
+    
+    if not subscription_id:
+        raise ValueError("AZURE_SUBSCRIPTION_ID environment variable is required")
     
     # Create cost management client
     cost_client = CostManagementClient(credential)

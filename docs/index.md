@@ -68,13 +68,15 @@ Best practices for using the server to optimize Azure costs and identify waste.
 
 ## Development Documentation
 
-### [Architecture Overview](./development/architecture.md) *(Coming Soon)*
+### [Architecture Overview](./architecture.md)
 
-Technical architecture of the Azure FinOps MCP Server including:
-- Component structure
-- Data flow
-- Security considerations
-- Performance optimizations
+Comprehensive technical architecture of the Azure FinOps MCP Server including:
+- Component architecture diagrams
+- Data flow sequences
+- Security architecture
+- Performance optimization strategies
+- Scalability considerations
+- Future enhancements
 
 ### [Contributing Guide](./development/contributing.md) *(Coming Soon)*
 

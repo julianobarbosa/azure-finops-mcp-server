@@ -1,20 +1,72 @@
 """Virtual Machine operations for Azure FinOps."""
 
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict, Tuple, Any
 from azure.mgmt.compute import ComputeManagementClient
+from azure.core.exceptions import ResourceNotFoundError
 import logging
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+from azure_finops_mcp_server.helpers.azure_utils import (
+    extract_resource_group,
+    format_cost,
+    calculate_yearly_cost
+)
+from azure_finops_mcp_server.config import get_config
 
 logger = logging.getLogger(__name__)
 
 ApiErrors = Dict[str, str]
 
+
+def get_vm_instance_view_batch(
+        compute_client: ComputeManagementClient,
+        vm_list: List[Any]
+    ) -> Dict[str, Any]:
+    """
+    Get instance views for multiple VMs in parallel to avoid N+1 queries.
+    
+    Args:
+        compute_client: Azure compute management client
+        vm_list: List of VM objects
+        
+    Returns:
+        Dictionary mapping VM ID to instance view
+    """
+    config = get_config()
+    instance_views = {}
+    
+    def fetch_instance_view(vm):
+        """Fetch instance view for a single VM."""
+        try:
+            resource_group = extract_resource_group(vm.id)
+            instance_view = compute_client.virtual_machines.instance_view(
+                resource_group_name=resource_group,
+                vm_name=vm.name
+            )
+            return vm.id, instance_view
+        except Exception as e:
+            logger.warning(f"Failed to get instance view for VM {vm.name}: {str(e)}")
+            return vm.id, None
+    
+    # Use ThreadPoolExecutor for parallel fetching
+    with ThreadPoolExecutor(max_workers=config.max_parallel_workers) as executor:
+        future_to_vm = {executor.submit(fetch_instance_view, vm): vm for vm in vm_list}
+        
+        for future in as_completed(future_to_vm):
+            vm_id, instance_view = future.result()
+            if instance_view:
+                instance_views[vm_id] = instance_view
+    
+    return instance_views
+
+
 def get_stopped_vms(
         credential,
         subscription_id: str,
         regions: Optional[List[str]] = None
-    ) -> Tuple[Dict[str, List[Dict[str, str]]], ApiErrors]:
+    ) -> Tuple[Dict[str, Any], ApiErrors]:
     """
-    Get all stopped/deallocated VMs in a subscription.
+    Get all stopped/deallocated VMs in a subscription with optimized batch processing.
     
     Args:
         credential: Azure credential for authentication
@@ -23,117 +75,89 @@ def get_stopped_vms(
         
     Returns:
         Tuple of:
-        - Dictionary with 'stopped_vms' key containing list of VM details
+        - Dictionary with stopped VMs and statistics
         - Dictionary of any errors encountered
     """
     api_errors: ApiErrors = {}
     stopped_vms = []
     
     try:
-        # Create compute client
         compute_client = ComputeManagementClient(credential, subscription_id)
         
-        # Get all VMs in the subscription
-        for vm in compute_client.virtual_machines.list_all():
-            # Filter by region if specified
-            if regions and vm.location not in regions:
-                continue
-            
-            # Get the instance view to check power state
-            try:
-                instance_view = compute_client.virtual_machines.instance_view(
-                    resource_group_name=vm.id.split('/')[4],
-                    vm_name=vm.name
-                )
-                
-                # Check if VM is stopped/deallocated
-                if instance_view.statuses:
-                    for status in instance_view.statuses:
-                        if status.code and 'PowerState/deallocated' in status.code:
-                            stopped_vms.append({
-                                'name': vm.name,
-                                'resource_group': vm.id.split('/')[4],
-                                'location': vm.location,
-                                'vm_size': vm.hardware_profile.vm_size if vm.hardware_profile else 'Unknown',
-                                'id': vm.id
-                            })
-                            break
-            except Exception as e:
-                logger.warning(f"Failed to get instance view for VM {vm.name}: {str(e)}")
-                continue
-                
+        # Step 1: Get all VMs (single API call)
+        all_vms = list(compute_client.virtual_machines.list_all())
+        
+        # Filter by region if specified
+        if regions:
+            filtered_vms = [vm for vm in all_vms if vm.location in regions]
+        else:
+            filtered_vms = all_vms
+        
+        # Step 2: Get instance views in batch (parallel calls)
+        instance_views = get_vm_instance_view_batch(compute_client, filtered_vms)
+        
+        # Step 3: Process results
+        for vm in filtered_vms:
+            instance_view = instance_views.get(vm.id)
+            if instance_view and instance_view.statuses:
+                for status in instance_view.statuses:
+                    if status.code and 'PowerState/deallocated' in status.code:
+                        vm_info = {
+                            'name': vm.name,
+                            'resource_group': extract_resource_group(vm.id),
+                            'location': vm.location,
+                            'vm_size': vm.hardware_profile.vm_size if vm.hardware_profile else 'Unknown',
+                            'id': vm.id
+                        }
+                        
+                        # Add cost estimation
+                        monthly_cost = estimate_vm_monthly_cost(vm_info['vm_size'])
+                        vm_info['estimated_monthly_cost'] = monthly_cost
+                        vm_info['estimated_annual_cost'] = calculate_yearly_cost(monthly_cost)
+                        
+                        stopped_vms.append(vm_info)
+                        break
+        
+        # Calculate statistics
+        total_monthly_waste = sum(vm['estimated_monthly_cost'] for vm in stopped_vms)
+        
+        result = {
+            'stopped_vms': stopped_vms,
+            'statistics': {
+                'total_stopped': len(stopped_vms),
+                'total_vms_checked': len(filtered_vms),
+                'total_monthly_waste': round(total_monthly_waste, 2),
+                'total_annual_waste': round(calculate_yearly_cost(total_monthly_waste), 2)
+            }
+        }
+        
     except Exception as e:
         api_errors['stopped_vms'] = f"Failed to get stopped VMs: {str(e)}"
+        result = {'stopped_vms': [], 'statistics': {}}
     
-    return {'stopped_vms': stopped_vms}, api_errors
+    return result, api_errors
 
-def estimate_vm_monthly_cost(vm_size: str, location: str) -> float:
+
+def estimate_vm_monthly_cost(vm_size: str) -> float:
     """
-    Estimate monthly cost for a VM based on size and location.
-    
-    Note: These are rough estimates. Actual costs vary by region and pricing tier.
+    Estimate monthly cost for a VM based on size.
     
     Args:
         vm_size: Azure VM size (e.g., 'Standard_B2s')
-        location: Azure region
         
     Returns:
         Estimated monthly cost in USD
     """
-    # Simplified cost estimates (actual costs vary by region)
-    vm_cost_map = {
-        # B-series (Burstable)
-        'Standard_B1s': 7.59,
-        'Standard_B1ms': 15.18,
-        'Standard_B2s': 30.37,
-        'Standard_B2ms': 60.74,
-        'Standard_B4ms': 121.47,
-        'Standard_B8ms': 242.94,
-        
-        # D-series (General Purpose)
-        'Standard_D2s_v3': 96.36,
-        'Standard_D4s_v3': 192.72,
-        'Standard_D8s_v3': 385.44,
-        'Standard_D16s_v3': 770.88,
-        'Standard_D32s_v3': 1541.76,
-        
-        # E-series (Memory Optimized)
-        'Standard_E2s_v3': 126.29,
-        'Standard_E4s_v3': 252.58,
-        'Standard_E8s_v3': 505.15,
-        'Standard_E16s_v3': 1010.30,
-        
-        # F-series (Compute Optimized)
-        'Standard_F2s_v2': 85.41,
-        'Standard_F4s_v2': 170.82,
-        'Standard_F8s_v2': 341.64,
-        'Standard_F16s_v2': 683.28,
-    }
+    config = get_config()
     
-    # Return estimate if available, otherwise return a default based on size pattern
-    if vm_size in vm_cost_map:
-        return vm_cost_map[vm_size]
+    # Use hourly rates from config and convert to monthly
+    hourly_rate = config.vm_cost_rates.get(vm_size, config.vm_cost_rates.get('default', 0.10))
+    monthly_cost = hourly_rate * config.hours_per_month
     
-    # Rough estimate based on VM size pattern
-    if 'B1' in vm_size:
-        return 15.0
-    elif 'B2' in vm_size:
-        return 30.0
-    elif 'B4' in vm_size:
-        return 120.0
-    elif 'D2' in vm_size or 'E2' in vm_size or 'F2' in vm_size:
-        return 100.0
-    elif 'D4' in vm_size or 'E4' in vm_size or 'F4' in vm_size:
-        return 200.0
-    elif 'D8' in vm_size or 'E8' in vm_size or 'F8' in vm_size:
-        return 400.0
-    elif 'D16' in vm_size or 'E16' in vm_size or 'F16' in vm_size:
-        return 800.0
-    else:
-        # Default estimate for unknown sizes
-        return 150.0
+    return round(monthly_cost, 2)
 
-def calculate_vm_waste(stopped_vms: List[Dict[str, str]]) -> Dict[str, float]:
+
+def calculate_vm_waste(stopped_vms: List[Dict[str, Any]]) -> Dict[str, Any]:
     """
     Calculate potential cost savings from stopped VMs.
     
@@ -145,17 +169,67 @@ def calculate_vm_waste(stopped_vms: List[Dict[str, str]]) -> Dict[str, float]:
     """
     total_waste = 0.0
     vm_waste = {}
+    vm_by_size = {}
     
     for vm in stopped_vms:
         vm_size = vm.get('vm_size', 'Unknown')
-        location = vm.get('location', 'eastus')
-        monthly_cost = estimate_vm_monthly_cost(vm_size, location)
+        monthly_cost = vm.get('estimated_monthly_cost', estimate_vm_monthly_cost(vm_size))
         
         vm_waste[vm['name']] = monthly_cost
         total_waste += monthly_cost
+        
+        # Group by VM size for analysis
+        if vm_size not in vm_by_size:
+            vm_by_size[vm_size] = {'count': 0, 'total_cost': 0}
+        vm_by_size[vm_size]['count'] += 1
+        vm_by_size[vm_size]['total_cost'] += monthly_cost
     
     return {
         'total_monthly_waste': round(total_waste, 2),
+        'total_annual_waste': round(calculate_yearly_cost(total_waste), 2),
         'vm_breakdown': vm_waste,
-        'annual_waste': round(total_waste * 12, 2)
+        'waste_by_size': vm_by_size,
+        'recommendations': generate_vm_recommendations(stopped_vms, total_waste)
     }
+
+
+def generate_vm_recommendations(stopped_vms: List[Dict[str, Any]], total_waste: float) -> List[str]:
+    """
+    Generate recommendations based on stopped VMs analysis.
+    
+    Args:
+        stopped_vms: List of stopped VM dictionaries
+        total_waste: Total monthly waste from stopped VMs
+        
+    Returns:
+        List of recommendation strings
+    """
+    recommendations = []
+    
+    vm_count = len(stopped_vms)
+    
+    if vm_count > 0:
+        recommendations.append(
+            f"Consider deleting {vm_count} stopped VMs to save {format_cost(total_waste)}/month"
+        )
+    
+    if vm_count > 10:
+        recommendations.append(
+            "High number of stopped VMs detected - consider implementing auto-shutdown policies"
+        )
+    
+    # Check for expensive stopped VMs
+    expensive_vms = [vm for vm in stopped_vms 
+                     if vm.get('estimated_monthly_cost', 0) > 500]
+    if expensive_vms:
+        recommendations.append(
+            f"Found {len(expensive_vms)} high-cost stopped VMs (>{format_cost(500)}/month each)"
+        )
+    
+    if total_waste > 1000:
+        annual_savings = calculate_yearly_cost(total_waste)
+        recommendations.append(
+            f"Significant savings opportunity: {format_cost(annual_savings)}/year"
+        )
+    
+    return recommendations

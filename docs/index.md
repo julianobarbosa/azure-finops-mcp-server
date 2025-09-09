@@ -104,9 +104,23 @@ Detailed Azure IAM permissions required for the server to function properly with
 
 Complete list of supported environment variables and configuration options.
 
+## Deployment & Operations
+
+### [Deployment Guide](./deployment.md)
+
+Comprehensive deployment and operations guide including:
+- Deployment strategies (Local, PyPI, Docker, IaC)
+- Environment configuration
+- Monitoring and alerting setup
+- Health checks implementation
+- Rollback procedures
+- Disaster recovery plans
+- Performance tuning
+- Troubleshooting guide
+
 ## Troubleshooting
 
-### [Common Issues](./troubleshooting/common-issues.md) *(Coming Soon)*
+### [Common Issues](./deployment.md#troubleshooting)
 
 Solutions to frequently encountered problems:
 - Authentication errors
@@ -114,7 +128,7 @@ Solutions to frequently encountered problems:
 - Performance problems
 - Configuration mistakes
 
-### [Debug Guide](./troubleshooting/debug.md) *(Coming Soon)*
+### [Debug Guide](./deployment.md#debug-mode)
 
 How to debug issues with the MCP server including logging configuration and diagnostic tools.
 

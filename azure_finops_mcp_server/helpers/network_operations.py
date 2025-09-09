@@ -1,8 +1,15 @@
 """Network operations for Azure FinOps."""
 
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict, Tuple, Any
 from azure.mgmt.network import NetworkManagementClient
 import logging
+
+from azure_finops_mcp_server.helpers.azure_utils import (
+    extract_resource_group,
+    format_cost,
+    calculate_yearly_cost
+)
+from azure_finops_mcp_server.config import get_config
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +48,7 @@ def get_unassociated_public_ips(
             if public_ip.ip_configuration is None:
                 ip_info = {
                     'name': public_ip.name,
-                    'resource_group': public_ip.id.split('/')[4],
+                    'resource_group': extract_resource_group(public_ip.id),
                     'location': public_ip.location,
                     'ip_address': public_ip.ip_address or 'Not Assigned',
                     'sku': public_ip.sku.name if public_ip.sku else 'Basic',
@@ -73,16 +80,21 @@ def estimate_public_ip_cost(sku: str, allocation_method: str) -> float:
     Returns:
         Estimated monthly cost in USD
     """
-    # Approximate monthly costs (varies by region)
+    config = get_config()
+    
+    # Determine cost key based on SKU and allocation
     if sku == 'Standard':
-        # Standard SKU is always static
-        return 3.65  # ~$0.005/hour
+        if allocation_method == 'Static':
+            cost_key = 'standard_static'
+        else:
+            cost_key = 'standard_dynamic'
     else:  # Basic SKU
         if allocation_method == 'Static':
-            return 3.65  # ~$0.005/hour
-        else:  # Dynamic
-            # Dynamic IPs are free when associated, charge when unassociated
-            return 2.92  # ~$0.004/hour when not associated
+            cost_key = 'basic_static'
+        else:
+            cost_key = 'basic_dynamic'
+    
+    return config.public_ip_cost_rates.get(cost_key, 3.65)
     
 def calculate_network_waste(unassociated_ips: List[Dict[str, str]]) -> Dict[str, float]:
     """

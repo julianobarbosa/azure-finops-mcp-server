@@ -36,6 +36,90 @@ class AzureFinOpsConfig:
     log_level: str = "INFO"
     enable_detailed_logging: bool = False
     
+    # Cost rates (per month in USD)
+    disk_cost_rates: Dict[str, float] = None
+    public_ip_cost_rates: Dict[str, float] = None
+    vm_cost_rates: Dict[str, float] = None
+    
+    # Resource patterns
+    orphaned_disk_patterns: List[str] = None
+    managed_resource_group_patterns: List[str] = None
+    
+    # Calculation settings
+    days_per_month: float = 30.44  # Average days per month
+    hours_per_month: float = 730  # Standard hours per month
+    
+    def __post_init__(self):
+        """Initialize default values for complex fields."""
+        if self.disk_cost_rates is None:
+            self.disk_cost_rates = {
+                "standard_hdd": 0.05,  # per GB/month
+                "standard_ssd": 0.12,  # per GB/month  
+                "premium_ssd": 0.18,   # per GB/month
+                "ultra_disk": 0.35     # per GB/month
+            }
+        
+        if self.public_ip_cost_rates is None:
+            self.public_ip_cost_rates = {
+                "basic_static": 3.65,    # per IP/month
+                "basic_dynamic": 2.88,   # per IP/month
+                "standard_static": 4.38, # per IP/month
+                "standard_dynamic": 3.65 # per IP/month
+            }
+        
+        if self.vm_cost_rates is None:
+            # Sample VM cost rates (per hour)
+            self.vm_cost_rates = {
+                # B-series (Burstable)
+                "Standard_B1s": 0.0104,
+                "Standard_B1ms": 0.0207,
+                "Standard_B2s": 0.0416,
+                "Standard_B2ms": 0.0832,
+                "Standard_B4ms": 0.166,
+                "Standard_B8ms": 0.333,
+                
+                # D-series (General Purpose)
+                "Standard_D2s_v3": 0.096,
+                "Standard_D4s_v3": 0.192,
+                "Standard_D8s_v3": 0.384,
+                "Standard_D16s_v3": 0.768,
+                "Standard_D32s_v3": 1.536,
+                "Standard_D64s_v3": 3.072,
+                
+                # E-series (Memory Optimized)
+                "Standard_E2s_v3": 0.126,
+                "Standard_E4s_v3": 0.252,
+                "Standard_E8s_v3": 0.504,
+                "Standard_E16s_v3": 1.008,
+                "Standard_E32s_v3": 2.016,
+                "Standard_E64s_v3": 4.032,
+                
+                # F-series (Compute Optimized)
+                "Standard_F2s_v2": 0.085,
+                "Standard_F4s_v2": 0.169,
+                "Standard_F8s_v2": 0.338,
+                "Standard_F16s_v2": 0.677,
+                "Standard_F32s_v2": 1.353,
+                "Standard_F64s_v2": 2.706,
+                
+                # Default for unknown sizes
+                "default": 0.10
+            }
+        
+        if self.orphaned_disk_patterns is None:
+            self.orphaned_disk_patterns = [
+                "pvc-",     # Kubernetes Persistent Volume Claims
+                "osdisk-",  # Common orphaned OS disk pattern
+                "datadisk-" # Common orphaned data disk pattern
+            ]
+        
+        if self.managed_resource_group_patterns is None:
+            self.managed_resource_group_patterns = [
+                "MC_",      # AKS managed resource groups
+                "mrg-",     # Managed resource group pattern
+                "databricks-rg-" # Databricks managed RGs
+            ]
+    
     @classmethod
     def from_environment(cls) -> 'AzureFinOpsConfig':
         """

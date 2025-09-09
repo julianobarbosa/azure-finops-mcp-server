@@ -33,7 +33,7 @@ from .network_operations import (
     analyze_network_usage
 )
 
-from .budget_operations import (
+from .budget_operations_refactored import (
     get_budget_data,
     generate_budget_recommendations,
     analyze_spending_trends

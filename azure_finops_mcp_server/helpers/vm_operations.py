@@ -12,6 +12,7 @@ from azure_finops_mcp_server.helpers.azure_utils import (
     calculate_yearly_cost
 )
 from azure_finops_mcp_server.config import get_config
+from azure_finops_mcp_server.helpers.azure_client_factory import get_client_factory
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +61,41 @@ def get_vm_instance_view_batch(
     return instance_views
 
 
+def _process_vm_for_stopped_status(vm, instance_view) -> Optional[Dict[str, Any]]:
+    """Process a VM to check if it's stopped and extract its info."""
+    if not instance_view or not instance_view.statuses:
+        return None
+    
+    for status in instance_view.statuses:
+        if status.code and 'PowerState/deallocated' in status.code:
+            vm_info = {
+                'name': vm.name,
+                'resource_group': extract_resource_group(vm.id),
+                'location': vm.location,
+                'vm_size': vm.hardware_profile.vm_size if vm.hardware_profile else 'Unknown',
+                'id': vm.id
+            }
+            
+            # Add cost estimation
+            monthly_cost = estimate_vm_monthly_cost(vm_info['vm_size'])
+            vm_info['estimated_monthly_cost'] = monthly_cost
+            vm_info['estimated_annual_cost'] = calculate_yearly_cost(monthly_cost)
+            
+            return vm_info
+    return None
+
+
+def _calculate_vm_statistics(stopped_vms: List[Dict], total_vms: int) -> Dict[str, Any]:
+    """Calculate statistics for stopped VMs."""
+    total_monthly_waste = sum(vm['estimated_monthly_cost'] for vm in stopped_vms)
+    return {
+        'total_stopped': len(stopped_vms),
+        'total_vms_checked': total_vms,
+        'total_monthly_waste': round(total_monthly_waste, 2),
+        'total_annual_waste': round(calculate_yearly_cost(total_monthly_waste), 2)
+    }
+
+
 def get_stopped_vms(
         credential,
         subscription_id: str,
@@ -84,51 +120,26 @@ def get_stopped_vms(
     try:
         compute_client = ComputeManagementClient(credential, subscription_id)
         
-        # Step 1: Get all VMs (single API call)
+        # Get all VMs and filter by region
         all_vms = list(compute_client.virtual_machines.list_all())
+        filtered_vms = [vm for vm in all_vms if vm.location in regions] if regions else all_vms
         
-        # Filter by region if specified
-        if regions:
-            filtered_vms = [vm for vm in all_vms if vm.location in regions]
-        else:
-            filtered_vms = all_vms
-        
-        # Step 2: Get instance views in batch (parallel calls)
+        # Get instance views in batch
         instance_views = get_vm_instance_view_batch(compute_client, filtered_vms)
         
-        # Step 3: Process results
+        # Process each VM
         for vm in filtered_vms:
             instance_view = instance_views.get(vm.id)
-            if instance_view and instance_view.statuses:
-                for status in instance_view.statuses:
-                    if status.code and 'PowerState/deallocated' in status.code:
-                        vm_info = {
-                            'name': vm.name,
-                            'resource_group': extract_resource_group(vm.id),
-                            'location': vm.location,
-                            'vm_size': vm.hardware_profile.vm_size if vm.hardware_profile else 'Unknown',
-                            'id': vm.id
-                        }
-                        
-                        # Add cost estimation
-                        monthly_cost = estimate_vm_monthly_cost(vm_info['vm_size'])
-                        vm_info['estimated_monthly_cost'] = monthly_cost
-                        vm_info['estimated_annual_cost'] = calculate_yearly_cost(monthly_cost)
-                        
-                        stopped_vms.append(vm_info)
-                        break
+            vm_info = _process_vm_for_stopped_status(vm, instance_view)
+            if vm_info:
+                stopped_vms.append(vm_info)
         
         # Calculate statistics
-        total_monthly_waste = sum(vm['estimated_monthly_cost'] for vm in stopped_vms)
+        statistics = _calculate_vm_statistics(stopped_vms, len(filtered_vms))
         
         result = {
             'stopped_vms': stopped_vms,
-            'statistics': {
-                'total_stopped': len(stopped_vms),
-                'total_vms_checked': len(filtered_vms),
-                'total_monthly_waste': round(total_monthly_waste, 2),
-                'total_annual_waste': round(calculate_yearly_cost(total_monthly_waste), 2)
-            }
+            'statistics': statistics
         }
         
     except Exception as e:

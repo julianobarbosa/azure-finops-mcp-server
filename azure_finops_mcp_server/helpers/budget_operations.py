@@ -1,6 +1,6 @@
 """Budget operations for Azure FinOps."""
 
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict, Tuple, Any
 from azure.mgmt.consumption import ConsumptionManagementClient
 import logging
 from datetime import datetime

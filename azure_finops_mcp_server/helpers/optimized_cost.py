@@ -11,7 +11,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 
 from .concurrent_util import ConcurrentProcessor
-from .util import cost_filters, get_credential
+from .cost_filters import cost_filters
+from .subscription_manager import get_credential
 
 logger = logging.getLogger(__name__)
 
@@ -244,7 +245,7 @@ def get_cost_optimized(
     
     # Get credentials and subscriptions
     credential = get_credential()
-    from .util import profiles_to_use
+    from .subscription_manager import profiles_to_use
     subscription_dict = profiles_to_use(profiles, all_profiles)
     
     # Process subscriptions in parallel
